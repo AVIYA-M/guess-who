@@ -40,4 +40,38 @@ function startTheGame() {
     mainContent.appendChild(welcome);
 
     console.log("הטופס הוסר, מתחילים לבנות את הלוח...");
+    renderBoard(persons);
+}
+/**
+ * פונקציה שמייצרת את לוח המשחק על המסך
+ * @param {Array} data - מערך הדמויות להצגה
+ */
+function renderBoard(data) {
+    const mainContent = document.getElementById('mainContent');
+    
+    // יצירת (Container) לכל הדמויות
+    const board = document.createElement('div');
+    board.id = 'gameBoard';
+    board.style.display = 'grid'; 
+    board.style.gridTemplateColumns = 'repeat(4, 1fr)';
+    board.style.gap = '10px';
+
+    // לולאה שעוברת על כל דמות במערך
+    data.forEach((person) => {
+        // יצירת קופסה לכל דמות
+        const card = document.createElement('div');
+        card.className = 'character-card';
+
+        // יצירת התמונה
+        const img = document.createElement('img');
+        img.src = person.img;
+        img.alt = "דמות";
+        img.style.width = '100px';
+
+        // הוספת התמונה לקופסה וכן הוספת  הקופסה ללוח
+        card.appendChild(img);
+        board.appendChild(card);
+    });
+
+    mainContent.appendChild(board);
 }
