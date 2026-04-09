@@ -53,7 +53,8 @@ function startTheGame() {
     
     // הדפסה לבדיקה שלנו (שהשחקן לא יראה בטעות)
     console.log("הדמות הסודית שנבחרה היא: ", secretPerson.Min, secretPerson.hairColor);
-
+    
+    renderQuestions(questionsType);
 }
 
 /**
@@ -88,4 +89,76 @@ function renderBoard(data) {
     });
 
     mainContent.appendChild(board);
+}
+
+/**
+ * מייצרת את השאלות עבור השחקן
+ * @param {Array} questions - מערך סוגי השאלות 
+ */
+function renderQuestions(questions) {
+    const mainContent = document.getElementById('mainContent');
+    
+    const quesContainer = document.createElement('div');
+    quesContainer.id = 'questionsArea';
+    quesContainer.style.margin = '20px 0';
+
+    // יצירת תיבת בחירה לקטגוריות (מין, צבע שיער וכו')
+    const typeSelect = document.createElement('select');
+    typeSelect.id = 'typeSelect';
+
+    questions.forEach(q => {
+        const option = document.createElement('option');
+        option.value = q.key;
+        option.textContent = q.title;
+        typeSelect.appendChild(option);
+    });
+
+    //יצירת תיבת בחירה לערכים (איש/אישה, שחור/חום...)
+    const valueSelect = document.createElement('select');
+    valueSelect.id = 'valueSelect';
+
+    // פונקציה לעדכון הערכים בתיבה השנייה לפי מה שנבחר בראשונה
+    const updateValues = () => {
+        valueSelect.innerHTML = ""; 
+        const selectedKey = typeSelect.value;
+        const selectedCategory = questions.find(q => q.key === selectedKey);
+        
+        selectedCategory.questions.forEach(val => {
+            const option = document.createElement('option');
+            option.value = val;
+            option.textContent = val;
+            valueSelect.appendChild(option);
+        });
+    };
+
+    // בודק שינוי בתיבה הראשונה כדי לעדכן את השנייה
+    typeSelect.addEventListener('change', updateValues);
+    updateValues(); // הפעלה ראשונית
+
+    //כפתור "שאל שאלה"
+    const askBtn = document.createElement('button');
+    askBtn.textContent = "שאל שאלה";
+    askBtn.addEventListener('click', () => {
+        checkQuestion(typeSelect.value, valueSelect.value);
+    });
+
+    quesContainer.appendChild(typeSelect);
+    quesContainer.appendChild(valueSelect);
+    quesContainer.appendChild(askBtn);
+    
+    mainContent.appendChild(quesContainer);
+}
+
+/**
+ * פונקציה שבודקת אם התשובה נכונה
+ * @param {string} key - הקטגוריה 
+ * @param {string} value - הערך
+ */
+function checkQuestion(key, value) {
+    if (secretPerson[key] === value) {
+        console.log("כן");
+    } 
+    else {
+        console.log("לא");
+    }
 }
