@@ -1,6 +1,7 @@
 import { persons, questionsType } from './data.js';
 
 let secretPerson;
+let currentPersons = [...persons];
 
 document.addEventListener('DOMContentLoaded', () => {
     
@@ -34,6 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
  * 4. מגרילה את הדמות הסודית שהשחקן צריך לנחש.
  */
 function startTheGame() {
+    currentPersons = [...persons];
     const mainContent = document.getElementById('mainContent');
     
     mainContent.innerHTML = ""; 
@@ -51,7 +53,7 @@ function startTheGame() {
     const randomm = Math.floor(Math.random() * persons.length);
     secretPerson = persons[randomm];
     
-    // הדפסה לבדיקה שלנו (שהשחקן לא יראה בטעות)
+    
     console.log("הדמות הסודית שנבחרה היא: ", secretPerson.Min, secretPerson.hairColor);
     
     renderQuestions(questionsType);
@@ -155,10 +157,25 @@ function renderQuestions(questions) {
  * @param {string} value - הערך
  */
 function checkQuestion(key, value) {
-    if (secretPerson[key] === value) {
+    const isCorrect = secretPerson[key] === value;
+
+    if (isCorrect) {
         console.log("כן");
+        //  משאירים רק את מי שהמאפיין שלו זהה לערך שנבחר
+        currentPersons = currentPersons.filter(p => p[key] === value);
     } 
     else {
         console.log("לא");
+        //  משאירים רק את מי שהמאפיין שלו שונה מהערך שנבחר
+        currentPersons = currentPersons.filter(p => p[key] !== value);
     }
+
+    // עדכון הלוח על המסך
+    updateBoard();
+}
+
+function updateBoard() {
+    const board = document.getElementById('gameBoard');
+    board.innerHTML = ""; // ניקוי הלוח הישן
+    renderBoard(currentPersons); // בנייה מחדש עם המערך המסונן
 }
