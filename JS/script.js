@@ -47,7 +47,8 @@ function startTheGame() {
     mainContent.appendChild(welcome);
 
     console.log("הטופס הוסר, מתחילים לבנות את הלוח...");
-    renderBoard(persons);
+    const startBoard = renderBoard(currentPersons);
+    mainContent.appendChild(startBoard);
     
     //בחירת דמות רנדומלית מהמערך
     const randomm = Math.floor(Math.random() * persons.length);
@@ -90,7 +91,7 @@ function renderBoard(data) {
         board.appendChild(card);
     });
 
-    mainContent.appendChild(board);
+    return board;
 }
 
 /**
@@ -175,7 +176,12 @@ function checkQuestion(key, value) {
 }
 
 function updateBoard() {
-    const board = document.getElementById('gameBoard');
-    board.innerHTML = ""; // ניקוי הלוח הישן
-    renderBoard(currentPersons); // בנייה מחדש עם המערך המסונן
+    const mainContent = document.getElementById('mainContent');
+    const oldBoard = document.getElementById('gameBoard');
+    
+    // יוצרים לוח חדש מסונן
+    const newBoard = renderBoard(currentPersons);
+    
+    // מחליפים את הישן בחדש
+    mainContent.replaceChild(newBoard, oldBoard);
 }
