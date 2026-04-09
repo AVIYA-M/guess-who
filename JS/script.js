@@ -1,5 +1,7 @@
 import { persons, questionsType } from './data.js';
 
+let secretPerson;
+
 document.addEventListener('DOMContentLoaded', () => {
     
     const form = document.getElementById('loginForm');
@@ -25,8 +27,11 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /**
- * פונקציה שמתחילה את המשחק בפועל
- * מעלימה את הטופס ומכינה את לוח המשחק
+ * פונקציה המנהלת את תהליך תחילת המשחק:
+ * 1. מנקה את המסך מהטופס.
+ * 2. מציגה הודעת ברכה אישית.
+ * 3. מייצרת את לוח המשחק.
+ * 4. מגרילה את הדמות הסודית שהשחקן צריך לנחש.
  */
 function startTheGame() {
     const mainContent = document.getElementById('mainContent');
@@ -41,7 +46,16 @@ function startTheGame() {
 
     console.log("הטופס הוסר, מתחילים לבנות את הלוח...");
     renderBoard(persons);
+    
+    //בחירת דמות רנדומלית מהמערך
+    const randomm = Math.floor(Math.random() * persons.length);
+    secretPerson = persons[randomm];
+    
+    // הדפסה לבדיקה שלנו (שהשחקן לא יראה בטעות)
+    console.log("הדמות הסודית שנבחרה היא: ", secretPerson.Min, secretPerson.hairColor);
+
 }
+
 /**
  * פונקציה שמייצרת את לוח המשחק על המסך
  * @param {Array} data - מערך הדמויות להצגה
