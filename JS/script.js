@@ -2,6 +2,7 @@ import { persons, questionsType } from './data.js';
 
 let secretPerson;
 let currentPersons = [...persons];
+let timerInterval;
 
 document.addEventListener('DOMContentLoaded', () => {
     
@@ -58,6 +59,11 @@ function startTheGame() {
     console.log("הדמות הסודית שנבחרה היא: ", secretPerson.Min, secretPerson.hairColor);
     
     renderQuestions(questionsType);
+
+    const userLevel = localStorage.getItem('user_level');
+    if (userLevel === 'hard') {
+       startTimer();
+    }
 }
 
 /**
@@ -198,12 +204,57 @@ function updateBoard() {
  */
 function guessPerson(clickedPerson) {
     const welcomeMsg = document.querySelector('h2');
+    const questionsArea = document.getElementById('questionsArea'); // תופס את אזור השאלות
     
     if (clickedPerson.Min === secretPerson.Min) {
-        welcomeMsg.textContent = "ניצחת את המשחק!";
+        clearInterval(timerInterval);
+        welcomeMsg.textContent = " ניצחת את המשחק!";
         welcomeMsg.style.color = "green";
-    } else {
-        welcomeMsg.textContent = "לא נכון, נסה שוב...";
+        
+        // מעלימים את אזור השאלות כי המשחק נגמר
+        if (questionsArea) questionsArea.remove(); 
+    } 
+    else {
+        // כשיש טעות הממשחק נגמר
+        clearInterval(timerInterval);
+        welcomeMsg.textContent = "טעות! זו לא הדמות... הפסדת";
         welcomeMsg.style.color = "red";
+        
+        // מעלימים את הכל כדי שלא יוכלו להמשיך
+        if (questionsArea) questionsArea.remove();
+        document.getElementById('gameBoard').style.opacity = "0.3"; // הופך את הלוח למטושטש
+        document.getElementById('gameBoard').style.pointerEvents = "none"; // מונע לחיצות נוספות
     }
+
+    // הוספת כפתור "משחק חדש" שיופיע תמיד בסוף
+    const restartBtn = document.createElement('button');
+    restartBtn.textContent = "למשחק חדש";
+    restartBtn.onclick = () => location.reload();
+    document.getElementById('mainContent').appendChild(restartBtn);
+}
+
+/**
+ * מפעילה טיימר של 60 שניות. אם הזמן נגמר - המשחק מסתיים.
+ */
+function startTimer() {
+    let timeLeft = 60;
+    const timerDisplay = document.createElement('h3');
+    timerDisplay.id = "timer";
+    timerDisplay.textContent = `זמן נותר: ${timeLeft} שניות`;
+    document.getElementById('mainContent').prepend(timerDisplay);
+
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        timerDisplay.textContent = `זמן נותר: ${timeLeft} שניות`;
+
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            document.getElementById('mainContent').innerHTML = "<h2>נגמר הזמן! הפסדת...</h2>";
+            // הוספת כפתור "נסה שוב"
+            const retryBtn = document.createElement('button');
+            retryBtn.textContent = "נסה שוב";
+            retryBtn.onclick = () => location.reload();
+            document.getElementById('mainContent').appendChild(retryBtn);
+        }
+    }, 1000);
 }
