@@ -86,6 +86,12 @@ function renderBoard(data) {
         img.alt = "דמות";
         img.style.width = '100px';
 
+        // הוספת אירוע לחיצה לכל דמות
+        img.addEventListener('click', () => {
+            guessPerson(person);
+        });
+
+        
         // הוספת התמונה לקופסה וכן הוספת  הקופסה ללוח
         card.appendChild(img);
         board.appendChild(card);
@@ -184,4 +190,20 @@ function updateBoard() {
     
     // מחליפים את הישן בחדש
     mainContent.replaceChild(newBoard, oldBoard);
+}
+
+/**
+ * בודקת האם הדמות שנלחצה היא הדמות הסודית
+ * @param {Object} clickedPerson - האובייקט של הדמות עליה לחצו
+ */
+function guessPerson(clickedPerson) {
+    const welcomeMsg = document.querySelector('h2');
+    
+    if (clickedPerson.Min === secretPerson.Min) {
+        welcomeMsg.textContent = "ניצחת את המשחק!";
+        welcomeMsg.style.color = "green";
+    } else {
+        welcomeMsg.textContent = "לא נכון, נסה שוב...";
+        welcomeMsg.style.color = "red";
+    }
 }
