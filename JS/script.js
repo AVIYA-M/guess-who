@@ -56,8 +56,8 @@ function startTheGame() {
     secretPerson = persons[randomm];
     
     
-    console.log("הדמות הסודית שנבחרה היא: ", secretPerson.Min, secretPerson.hairColor);
-    
+    console.log("רמז למפתחת - הדמות הסודית:", secretPerson);
+
     renderQuestions(questionsType);
 
     const userLevel = localStorage.getItem('user_level');
@@ -112,55 +112,41 @@ function renderBoard(data) {
  */
 function renderQuestions(questions) {
     const mainContent = document.getElementById('mainContent');
-    
     const quesContainer = document.createElement('div');
     quesContainer.id = 'questionsArea';
-    quesContainer.style.margin = '20px 0';
 
-    // יצירת תיבת בחירה לקטגוריות (מין, צבע שיער וכו')
-    const typeSelect = document.createElement('select');
-    typeSelect.id = 'typeSelect';
+    const categoryRow = document.createElement('div');
+    categoryRow.className = 'category-row';
 
+    const optionsRow = document.createElement('div');
+    optionsRow.className = 'options-row';
+
+    // יצירת כפתור לכל קטגוריה (מין, צבע שיער וכו')
     questions.forEach(q => {
-        const option = document.createElement('option');
-        option.value = q.key;
-        option.textContent = q.title;
-        typeSelect.appendChild(option);
-    });
-
-    //יצירת תיבת בחירה לערכים (איש/אישה, שחור/חום...)
-    const valueSelect = document.createElement('select');
-    valueSelect.id = 'valueSelect';
-
-    // פונקציה לעדכון הערכים בתיבה השנייה לפי מה שנבחר בראשונה
-    const updateValues = () => {
-        valueSelect.innerHTML = ""; 
-        const selectedKey = typeSelect.value;
-        const selectedCategory = questions.find(q => q.key === selectedKey);
+        const catBtn = document.createElement('button');
+        catBtn.className = 'cat-btn';
+        catBtn.textContent = q.title;
         
-        selectedCategory.questions.forEach(val => {
-            const option = document.createElement('option');
-            option.value = val;
-            option.textContent = val;
-            valueSelect.appendChild(option);
-        });
-    };
+        catBtn.onclick = () => {
+            // הדגשת הכפתור הנבחר
+            document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+            catBtn.classList.add('active');
 
-    // בודק שינוי בתיבה הראשונה כדי לעדכן את השנייה
-    typeSelect.addEventListener('change', updateValues);
-    updateValues(); // הפעלה ראשונית
-
-    //כפתור "שאל שאלה"
-    const askBtn = document.createElement('button');
-    askBtn.textContent = "שאל שאלה";
-    askBtn.addEventListener('click', () => {
-        checkQuestion(typeSelect.value, valueSelect.value);
+            // הצגת האופציות לקטגוריה הזו
+            optionsRow.innerHTML = "";
+            q.questions.forEach(val => {
+                const optBtn = document.createElement('button');
+                optBtn.className = 'opt-btn';
+                optBtn.textContent = val;
+                optBtn.onclick = () => checkQuestion(q.key, val);
+                optionsRow.appendChild(optBtn);
+            });
+        };
+        categoryRow.appendChild(catBtn);
     });
 
-    quesContainer.appendChild(typeSelect);
-    quesContainer.appendChild(valueSelect);
-    quesContainer.appendChild(askBtn);
-    
+    quesContainer.appendChild(categoryRow);
+    quesContainer.appendChild(optionsRow);
     mainContent.appendChild(quesContainer);
 }
 
@@ -204,33 +190,35 @@ function updateBoard() {
  */
 function guessPerson(clickedPerson) {
     const welcomeMsg = document.querySelector('h2');
-    const questionsArea = document.getElementById('questionsArea'); // תופס את אזור השאלות
-    
-    if (clickedPerson.Min === secretPerson.Min) {
-        clearInterval(timerInterval);
-        welcomeMsg.textContent = " ניצחת את המשחק!";
-        welcomeMsg.style.color = "green";
-        
-        // מעלימים את אזור השאלות כי המשחק נגמר
-        if (questionsArea) questionsArea.remove(); 
-    } 
-    else {
-        // כשיש טעות הממשחק נגמר
-        clearInterval(timerInterval);
-        welcomeMsg.textContent = "טעות! זו לא הדמות... הפסדת";
-        welcomeMsg.style.color = "red";
-        
-        // מעלימים את הכל כדי שלא יוכלו להמשיך
-        if (questionsArea) questionsArea.remove();
-        document.getElementById('gameBoard').style.opacity = "0.3"; // הופך את הלוח למטושטש
-        document.getElementById('gameBoard').style.pointerEvents = "none"; // מונע לחיצות נוספות
+    const main = document.getElementById('mainContent');
+    const questionsArea = document.getElementById('questionsArea');
+    const gameBoard = document.getElementById('gameBoard');
+
+    clearInterval(timerInterval);
+
+    // 1. ביטול אפשרות לחיצה על הלוח והשאלות
+    if (questionsArea) questionsArea.remove();
+    gameBoard.style.pointerEvents = "none";
+    gameBoard.style.opacity = "0.5";
+
+    // בדיקת תוצאה וחשיפת הדמות
+    if (clickedPerson.img === secretPerson.img) {
+        welcomeMsg.textContent = "ניצחת כל הכבוד!";
+        welcomeMsg.style.color = "var(--success)";
+    } else {
+        welcomeMsg.textContent = "הפסדת הפעם...";
+        welcomeMsg.style.color = "var(--danger)";
     }
 
-    // הוספת כפתור "משחק חדש" שיופיע תמיד בסוף
-    const restartBtn = document.createElement('button');
-    restartBtn.textContent = "למשחק חדש";
-    restartBtn.onclick = () => location.reload();
-    document.getElementById('mainContent').appendChild(restartBtn);
+    // הצגת הדמות הסודית בסיום
+    const revealDiv = document.createElement('div');
+    revealDiv.className = 'secret-reveal';
+    revealDiv.innerHTML = `
+        <p>הדמות הסודית הייתה:</p>
+        <img src="${secretPerson.img}" style="width:120px; border-radius:12px;">
+        <button onclick="location.reload()" style="margin-top:15px; background:var(--primary); color:white; padding:12px 24px; border-radius:12px; border:none; cursor:pointer;">משחק חדש</button>
+    `;
+    main.appendChild(revealDiv);
 }
 
 /**
