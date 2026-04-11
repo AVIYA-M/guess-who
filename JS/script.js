@@ -38,32 +38,35 @@ document.addEventListener('DOMContentLoaded', () => {
 function startTheGame() {
     currentPersons = [...persons];
     const mainContent = document.getElementById('mainContent');
-    
     mainContent.innerHTML = ""; 
 
-    // יוצרים כותרת חדשה עם שם השחקן
     const welcome = document.createElement('h2');
-    const playerName = localStorage.getItem('user_name');
-    welcome.textContent = "בהצלחה, " + playerName + "!";
+    welcome.style.color = "white";
+    welcome.textContent = `בהצלחה, ${localStorage.getItem('user_name')}!`;
     mainContent.appendChild(welcome);
 
-    console.log("הטופס הוסר, מתחילים לבנות את הלוח...");
-    const startBoard = renderBoard(currentPersons);
-    mainContent.appendChild(startBoard);
-    
-    //בחירת דמות רנדומלית מהמערך
-    const randomm = Math.floor(Math.random() * persons.length);
-    secretPerson = persons[randomm];
-    
-    
-    console.log("רמז למפתחת - הדמות הסודית:", secretPerson);
+    // יצירת הקונטיינר המפוצל
+    const gameLayout = document.createElement('div');
+    gameLayout.className = 'game-layout';
+    mainContent.appendChild(gameLayout);
 
-    renderQuestions(questionsType);
+    // אזור שאלות 
+    const questionsArea = document.createElement('div');
+    questionsArea.id = 'questionsArea';
+    gameLayout.appendChild(questionsArea);
 
-    const userLevel = localStorage.getItem('user_level');
-    if (userLevel === 'hard') {
-       startTimer();
-    }
+    // לוח המשחק
+    const board = renderBoard(currentPersons);
+    gameLayout.appendChild(board);
+
+    // הגרלת דמות
+    secretPerson = persons[Math.floor(Math.random() * persons.length)];
+    console.log("דמות סודית:", secretPerson);
+
+    // רנדור שאלות לתוך 
+    renderQuestions(questionsType, questionsArea);
+
+    if (localStorage.getItem('user_level') === 'hard') startTimer();
 }
 
 /**
@@ -76,8 +79,6 @@ function renderBoard(data) {
     // יצירת (Container) לכל הדמויות
     const board = document.createElement('div');
     board.id = 'gameBoard';
-    board.style.display = 'grid'; 
-    board.style.gridTemplateColumns = 'repeat(4, 1fr)';
     board.style.gap = '10px';
 
     // לולאה שעוברת על כל דמות במערך
@@ -110,29 +111,22 @@ function renderBoard(data) {
  * מייצרת את השאלות עבור השחקן
  * @param {Array} questions - מערך סוגי השאלות 
  */
-function renderQuestions(questions) {
-    const mainContent = document.getElementById('mainContent');
-    const quesContainer = document.createElement('div');
-    quesContainer.id = 'questionsArea';
-
+// עדכון פונקציית הרינדור של השאלות
+function renderQuestions(questions, container) {
+    container.innerHTML = ""; // ניקוי
+    
     const categoryRow = document.createElement('div');
     categoryRow.className = 'category-row';
-
     const optionsRow = document.createElement('div');
     optionsRow.className = 'options-row';
 
-    // יצירת כפתור לכל קטגוריה (מין, צבע שיער וכו')
     questions.forEach(q => {
         const catBtn = document.createElement('button');
         catBtn.className = 'cat-btn';
         catBtn.textContent = q.title;
-        
         catBtn.onclick = () => {
-            // הדגשת הכפתור הנבחר
             document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
             catBtn.classList.add('active');
-
-            // הצגת האופציות לקטגוריה הזו
             optionsRow.innerHTML = "";
             q.questions.forEach(val => {
                 const optBtn = document.createElement('button');
@@ -145,9 +139,8 @@ function renderQuestions(questions) {
         categoryRow.appendChild(catBtn);
     });
 
-    quesContainer.appendChild(categoryRow);
-    quesContainer.appendChild(optionsRow);
-    mainContent.appendChild(quesContainer);
+    container.appendChild(categoryRow);
+    container.appendChild(optionsRow);
 }
 
 /**
@@ -174,14 +167,10 @@ function checkQuestion(key, value) {
 }
 
 function updateBoard() {
-    const mainContent = document.getElementById('mainContent');
     const oldBoard = document.getElementById('gameBoard');
-    
-    // יוצרים לוח חדש מסונן
+    const parent = oldBoard.parentNode; 
     const newBoard = renderBoard(currentPersons);
-    
-    // מחליפים את הישן בחדש
-    mainContent.replaceChild(newBoard, oldBoard);
+    parent.replaceChild(newBoard, oldBoard);
 }
 
 /**
@@ -218,8 +207,7 @@ function guessPerson(clickedPerson) {
         <img src="${secretPerson.img}" style="width:120px; border-radius:12px;">
         <button onclick="location.reload()" style="margin-top:15px; background:var(--primary); color:white; padding:12px 24px; border-radius:12px; border:none; cursor:pointer;">משחק חדש</button>
     `;
-    main.appendChild(revealDiv);
-}
+    main.prepend(revealDiv);}
 
 /**
  * מפעילה טיימר של 60 שניות. אם הזמן נגמר - המשחק מסתיים.
