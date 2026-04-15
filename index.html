@@ -1,38 +1,27 @@
+
+
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>נחש מי</title>
-    <link rel="stylesheet" href="./CSS/style.css">
-    <link rel="icon" href="favicon.ico" type="icon">
-    <!-- שימוש ב-type="module" הוא חובה לייבוא קבצים -->
-    <script src="./JS/script.js" type="module" defer></script>
+    <title>נחש מי - כניסה</title>
+    <link rel="stylesheet" href="styles/style.css">
+    <link rel="icon" href="favicon.ico" type="image/png">
+    <script type="module" src="JS/login.js"></script>
 </head>
 <body>
-    <header>
-        <h1>נחש מי?</h1>
-    </header>
-
     <main id="mainContent">
-        <section class="login-container">
+        <div id="loginSection">
+            <h1 id="welcomeMessage">ברוכים הבאים לנחש מי!</h1>
             <form id="loginForm">
-                <label for="playerName">שם שחקן:</label>
-                <input type="text" id="playerName" required minlength="2" placeholder="הכנס שם...">
-                
-                <label for="difficulty">בחר רמת קושי:</label>
+                <input type="text" id="playerName" placeholder="הכנס שם שחקן" required>
                 <select id="difficulty">
-                    <option value="easy">קל (ללא הגבלת זמן)</option>
-                    <option value="hard">קשה (דקה אחת למשחק)</option>
+                    <option value="easy">קל</option>
+                    <option value="hard">קשה</option>
                 </select>
-
-                <button type="submit" id="startBtn">התחל משחק</button>
+                <button type="submit">התחל משחק</button>
             </form>
-        </section>
+        </div>
     </main>
-
-    <footer>
-        <p>&copy;aviya</p>
-    </footer>
 </body>
 </html>
