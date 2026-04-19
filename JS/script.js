@@ -4,6 +4,7 @@ import { persons, questionsType } from './data.js';
 let secretPerson;
 let currentPersons = [...persons];
 let timerInterval;
+let questionsAsked = 0;
 
 /**
  * מחכה לטעינת ה-DOM, מחלץ נתונים מה-URL ומפעיל את המשחק.
@@ -155,6 +156,7 @@ function renderQuestions(questions, container) {
  * @param {string} value - הערך שנבחר.
  */
 function checkQuestion(key, value) {
+    questionsAsked++;
     const isCorrect = secretPerson[key] === value;
 
     if (isCorrect) {
@@ -189,6 +191,7 @@ function guessPerson(clickedPerson) {
 
     clearInterval(timerInterval);
 
+    
     if (questionsArea) questionsArea.remove();
     if (gameBoard) {
         gameBoard.style.pointerEvents = "none";
@@ -196,9 +199,16 @@ function guessPerson(clickedPerson) {
     }
 
     if (clickedPerson.img === secretPerson.img) {
+        
         welcomeMsg.textContent = "ניצחת כל הכבוד!";
         welcomeMsg.style.color = "green";
-    } else {
+        welcomeMsg.textContent = `ניצחת עם ${questionsAsked} שאלות בלבד!`;
+        saveHighScore(localStorage.getItem('user_name'), questionsAsked);
+        const name = localStorage.getItem('user_name') || "שחקן אנונימי";
+        saveHighScore(name, questionsAsked);
+    } 
+    
+    else {
         welcomeMsg.textContent = "הפסדת הפעם...";
         welcomeMsg.style.color = "red";
     }
@@ -218,14 +228,51 @@ function guessPerson(clickedPerson) {
     const newGameBtn = document.createElement('button');
     newGameBtn.textContent = "משחק חדש";
     newGameBtn.style.marginTop = '15px';
-    // חזרה לדף הבית שנמצא מחוץ לתיקיית HTML
+    // חזרה לדף הבית
     newGameBtn.onclick = () => window.location.href = '../index.html';
 
     revealDiv.appendChild(revealText);
     revealDiv.appendChild(revealImg);
     revealDiv.appendChild(newGameBtn);
     main.appendChild(revealDiv);
+
+    
 }
+
+
+
+
+
+/**
+ * שומרת את תוצאת המשחק בטבלת השיאים ב-localStorage.
+ * הפונקציה מנהלת מערך אובייקטים, ממיינת אותו לפי הציון הנמוך ביותר
+ * ושומרת אותו כטקסט
+ * * @param {string} name - שם השחקן.
+ * @param {number} score - מספר השאלות שנדרשו לניצחון.
+ */
+function saveHighScore(name, score) {
+    // שליפת המערך הקיים מהזיכרון והפיכתו מטקסט לאובייקט JS (או יצירת מערך ריק אם אין נתונים)
+    let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
+    
+    // יצירת אובייקט תוצאה חדש והוספתו למערך
+    const newEntry = { 
+        name: name, 
+        score: score, 
+        date: new Date().toLocaleDateString() 
+    };
+    leaderboard.push(newEntry);
+    
+    // מיון המערך 
+    // ככל שמספר השאלות נמוך יותר, השחקן מדורג גבוה יותר.
+    leaderboard.sort((a, b) => a.score - b.score);
+    
+    // שמירת המערך המעודכן חזרה ל-localStorage לאחר הפיכתו לטקסט (Stringify)
+    localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+}
+
+
+
+
 
 /**
  * מפעילה טיימר ספירה לאחור ומסיימת את המשחק במקרה של חריגה מהזמן.
