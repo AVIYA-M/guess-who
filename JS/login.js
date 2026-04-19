@@ -3,43 +3,85 @@
  * ניהול דף הכניסה: זיהוי משתמש קיים, ברכת שלום ומעבר למשחק.
  */
 document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('loginForm');
-    const nameInput = document.getElementById('playerName');
-    const welcomeMsg = document.getElementById('welcomeMessage');
+    const loginForm = document.getElementById('loginForm');
+    const playerNameInput = document.getElementById('playerName');
+    const playerPhoneInput = document.getElementById('playerPhone');
+    const welcomeMessage = document.getElementById('welcomeMessage');
 
     /**
-     * אירוע קלט לבדיקה האם השם קיים ב-localStorage 
+     * פונקציה לבדיקת שחקן קיים ועדכון הודעת שלום
      */
-    nameInput.addEventListener('input', () => {
-        // שליפת השם השמור מה-localStorage 
-        const savedName = localStorage.getItem('user_name');
-        const currentInput = nameInput.value.trim();
+    const checkExistingPlayer = () => {
+        const name = playerNameInput.value.trim();
+        const phone = playerPhoneInput.value.trim();
 
-        if (savedName && currentInput === savedName) {
-            welcomeMsg.textContent = `טוב לראות אותך שוב, ${savedName}!`;
-            welcomeMsg.style.color = "#4f46e5";
-        } else if (currentInput.length > 0) {
-            welcomeMsg.textContent = `שלום ${currentInput}! שמחים שהצטרפת.`;
-            welcomeMsg.style.color = "#22c55e";
+        // שליפת רשימת השחקנים מהזיכרון
+        const data = JSON.parse(localStorage.getItem('highList')) || [];
+
+        // בדיקה האם קיים שחקן עם אותו שם וגם אותו טלפון
+        const isExisting = data.some(player => player.name === name && player.phone === phone);
+
+        if (name && phone) {
+            if (isExisting) {
+                welcomeMessage.textContent = `טוב לראותך שוב, ${name}!`;
+                welcomeMessage.style.color = "#2ecc71";  
+            } else {
+                welcomeMessage.textContent = `שמחים שהצטרפת, ${name}!`;
+                welcomeMessage.style.color = "#3498db"; 
+            }
         } else {
-            welcomeMsg.textContent = " אנא הכנס שם כדי להתחיל";
-            welcomeMsg.style.color = "white";
+            welcomeMessage.textContent = "ברוכים הבאים לנחש מי!";
+            welcomeMessage.style.color = "black";
         }
+    };
+
+    //  מעקב אחר השינויים בשדות הקלט כדי לעדכן את ההודעה בזמן אמת
+    playerNameInput.addEventListener('input', checkExistingPlayer);
+    playerPhoneInput.addEventListener('input', checkExistingPlayer);
+
+    // טיפול בשליחת הטופס
+    loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const name = playerNameInput.value.trim();
+        const phone = playerPhoneInput.value.trim();
+        const difficulty = document.getElementById('difficulty').value;
+
+        // שמירת הפרטים הנוכחיים לשימוש במהלך המשחק
+        localStorage.setItem('user_name', name);
+        localStorage.setItem('user_phone', phone);
+        
+        // מעבר לדף המשחק עם הפרטים ב-URL
+        window.location.href = `HTML/game.html?name=${encodeURIComponent(name)}&level=${difficulty}`;
+    });
+    
+    // --- כאן יבוא קוד המודל של ההוראות שדיברנו עליו קודם ---
+});
+
+/**
+ * מנהל את תיבת ההוראות (Modal) בדף הבית.
+ * הפונקציה מאזינה לאירועי לחיצה לפתיחה וסגירה של חלון ההוראות
+ * על ידי שינוי מאפייני ה-CSS של האלמנט.
+ */
+document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('instructionsModal');
+    const openBtn = document.getElementById('openInstructions');
+    const closeBtn = document.querySelector('.close-button');
+
+    // פתיחת המודל בלחיצה על הכפתור
+    openBtn.addEventListener('click', () => {
+        modal.style.display = 'block';
     });
 
-    /**
-     * שליחת הטופס ומעבר דף עם פרמטרים  
-     */
-    form.addEventListener('submit', (event) => {
-        event.preventDefault(); // שימוש ב-preventDefault 
+    // סגירת המודל בלחיצה על ה-X
+    closeBtn.addEventListener('click', () => {
+        modal.style.display = 'none';
+    });
 
-        const name = nameInput.value.trim();
-        const level = document.getElementById('difficulty').value;
-
-        // שמירת השם בזיכרון המקומי 
-        localStorage.setItem('user_name', name);
-
-        // מעבר לדף המשחק בתיקיית pages עם הפרמטרים בשורת הכתובת 
-        window.location.href = `HTML/game.html?name=${encodeURIComponent(name)}&level=${level}`;
+    // סגירת המודל אם המשתמש לוחץ מחוץ לתיבה הלבנה
+    window.addEventListener('click', (event) => {
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
     });
 });

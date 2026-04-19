@@ -199,15 +199,17 @@ function guessPerson(clickedPerson) {
     }
 
     if (clickedPerson.img === secretPerson.img) {
-        
-        welcomeMsg.textContent = "ניצחת כל הכבוד!";
-        welcomeMsg.style.color = "green";
         welcomeMsg.textContent = `ניצחת עם ${questionsAsked} שאלות בלבד!`;
-        saveHighScore(localStorage.getItem('user_name'), questionsAsked);
+        welcomeMsg.style.color = "green";
+
+        // שליפת הנתונים ששמרנו בדף הכניסה
         const name = localStorage.getItem('user_name') || "שחקן אנונימי";
-        saveHighScore(name, questionsAsked);
-    } 
-    
+        const phone = localStorage.getItem('user_phone') || "ללא טלפון";
+        
+        // שליחת כל שלושת הפרמטרים בסדר הנכון
+        saveHighScore(name, phone, questionsAsked);
+    }
+
     else {
         welcomeMsg.textContent = "הפסדת הפעם...";
         welcomeMsg.style.color = "red";
@@ -241,36 +243,38 @@ function guessPerson(clickedPerson) {
 
 
 
-
-
 /**
- * שומרת את תוצאת המשחק בטבלת השיאים ב-localStorage.
- * הפונקציה מנהלת מערך אובייקטים, ממיינת אותו לפי הציון הנמוך ביותר
- * ושומרת אותו כטקסט
- * * @param {string} name - שם השחקן.
- * @param {number} score - מספר השאלות שנדרשו לניצחון.
+ * שומרת את התוצאה בטבלת השיאים.
+ * @param {string} name - שם השחקן.
+ * @param {string} phone - טלפון השחקן.
+ * @param {number} score - מספר רמזים.
  */
-function saveHighScore(name, score) {
-    // שליפת המערך הקיים מהזיכרון והפיכתו מטקסט לאובייקט JS (או יצירת מערך ריק אם אין נתונים)
-    let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
+function saveHighScore(name, phone, score) {
+    let leaderboard = JSON.parse(localStorage.getItem('highList')) || [];
     
-    // יצירת אובייקט תוצאה חדש והוספתו למערך
-    const newEntry = { 
-        name: name, 
-        score: score, 
-        date: new Date().toLocaleDateString() 
-    };
-    leaderboard.push(newEntry);
-    
-    // מיון המערך 
-    // ככל שמספר השאלות נמוך יותר, השחקן מדורג גבוה יותר.
+    // חיפוש שחקן קיים לפי הטלפון 
+    const existingPlayerIndex = leaderboard.findIndex(p => p.phone === phone);
+
+    if (existingPlayerIndex !== -1) {
+        // השחקן קיים - נעדכן רק אם התוצאה הנוכחית טובה יותר (פחות שאלות)
+        if (score < leaderboard[existingPlayerIndex].score) {
+            leaderboard[existingPlayerIndex].score = score;
+            leaderboard[existingPlayerIndex].date = new Date().toLocaleDateString();
+        }
+    } else {
+        // שחקן חדש - נוסיף אותו למערך
+        leaderboard.push({
+            name: name,
+            phone: phone,
+            score: score,
+            date: new Date().toLocaleDateString()
+        });
+    }
+
+    // מיון ושמירה
     leaderboard.sort((a, b) => a.score - b.score);
-    
-    // שמירת המערך המעודכן חזרה ל-localStorage לאחר הפיכתו לטקסט (Stringify)
-    localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+    localStorage.setItem('highList', JSON.stringify(leaderboard));
 }
-
-
 
 
 
