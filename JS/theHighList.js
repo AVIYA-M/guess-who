@@ -39,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
             th.textContent = text;
             headerRow.appendChild(th);
         });
+        
         table.appendChild(headerRow);
 
         // 2. מילוי הנתונים בעזרת map (הצגת 5 התוצאות הטובות ביותר)

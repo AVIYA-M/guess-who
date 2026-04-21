@@ -1,0 +1,276 @@
+/* טעינת גופן Heebo מודרני */
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;700&display=swap');
+
+:root {
+    --bg-dark: #0f172a;
+    --glass-dark: rgba(15, 23, 42, 0.85); /* כניסה כהה */
+    --accent: #fdcb6e;
+    --primary: #6c5ce7;
+    --text: #ffffff;
+}
+
+body {
+    font-family: 'Heebo', sans-serif;
+    background-color: var(--bg-dark);
+    /* שילוב התמונה שיצרנו כרקע מסתורי */
+    background-image: linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.7)), url('../IMAGES/background.png');
+    background-size: cover;
+    background-attachment: fixed;
+    margin: 0;
+    direction: rtl;
+    color: var(--text);
+}
+/* צביעת כותרות הטבלה בלבד */
+th {
+    color: var(--primary); /* הצבע הזהב המסתורי שלך */
+    font-size: 1.2rem;
+    padding: 15px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+th, td {
+    padding: 12px 20px;
+    text-align: center;
+    /* קו עדין בצד שמאל של כל תא */
+    border-left: 1px solid rgba(255, 255, 255, 0.1); 
+}
+
+/* מסיר את הקו מהעמודה האחרונה (שנמצאת הכי בשמאל) כדי שיהיה נקי */
+th:last-child, td:last-child {
+    border-left: none;
+}
+
+/* בונוס: קו מפריד בין הכותרות לשורות הנתונים */
+thead th {
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+
+
+/* --- דף כניסה כהה (Dark & Elegant) --- */
+#loginSection {
+    background: var(--glass-dark);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 40px;
+    border-radius: 30px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    max-width: 400px;
+    margin: 100px auto;
+    text-align: center;
+}
+
+#loginForm input, #loginForm select {
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.3);
+    color: white;
+    box-sizing: border-box;
+}
+
+/* --- לוח המשחק והשאלות --- */
+.game-layout {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    width: 95%;
+    max-width: 1400px;
+    margin: 30px auto;
+}
+
+#questionsArea {
+    flex: 0 0 320px;
+    background: rgba(30, 41, 59, 0.9); /* כהה ומקצועי */
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#gameBoard {
+    flex: 1;
+    display: grid;
+    /* הגדרה קשיחה של 6 עמודות שוות */
+    grid-template-columns: repeat(6, 1fr); 
+    /* רווח אחיד לחלוטין בין התמונות */
+    gap: 15px; 
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 25px;
+    backdrop-filter: blur(5px);
+    /* מוודא שהלוח ממורכז */
+    justify-content: center; 
+    align-content: start;
+}
+
+.character-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 5px;
+    transition: 0.3s;
+    cursor: pointer;
+    /* הופך את הכרטיס לריבוע מושלם תמיד */
+    aspect-ratio: 1 / 1; 
+    width: 100%; /* ממלא את העמודה שלו ב-Grid */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box; /* חשוב כדי שה-padding לא יהרוס את הגודל */
+}
+
+.character-card img {
+    width: 100%;
+    height: 100%;
+    /* זה הסוד: התמונה נחתכת לריבוע בלי להתעוות */
+    object-fit: cover; 
+    border-radius: 10px;
+}
+
+/* --- סיום משחק - בתוך אזור השאלות --- */
+.secret-reveal-side {
+    text-align: center;
+    color: white;
+}
+/* --- כפתור צא לדרך - הנמכה ועיצוב --- */
+.btn-primary {
+    background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 12px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-top: 30px; /* הנמכה של הכפתור */
+    box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(108, 92, 231, 0.5);
+}
+
+/* --- עיצוב רשימת השאלות --- */
+.category-row {
+    display: flex;
+    flex-direction: column;
+    gap: 12px; /* רווח בין הקטגוריות */
+}
+
+.cat-btn {
+    background: rgba(255, 255, 255, 0.05); /* מראה חצי שקוף */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #e0e0e0;
+    padding: 14px 20px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: right;
+    font-size: 1rem;
+}
+
+.cat-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+}
+
+.cat-btn.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+    box-shadow: 0 0 15px rgba(108, 92, 231, 0.4);
+}
+
+/* --- עיצוב האופציות (התשובות שנפתחות) --- */
+.options-row {
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.2); /* רקע כהה יותר לאזור התשובות */
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.opt-btn {
+    background: transparent;
+    border: 1.5px solid var(--primary);
+    color: var(--primary);
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.opt-btn:hover {
+    background: var(--primary);
+    color: white;
+}
+.secret-reveal-side img {
+    width: 150px; /* קטן יותר */
+    border-radius: 15px;
+    margin: 15px 0;
+}
+
+/* כפתור משחק חדש (אייקון קטן ונקי) */
+.icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin-top: 10px;
+    transition: 0.2s;
+}
+
+.icon-btn:hover { transform: scale(1.1); }
+.icon-btn img {
+    width: 40px; /* קטן ונעים */
+}
+
+/* מוודא שהאייקון בתוך הכפתור לא קופץ */
+.nav-btn img {
+    width: 30px;
+    height: 30px;
+    display: block; /* מונע רווחים מיותרים בתחתית התמונה */
+    pointer-events: none; /* מונע מהתמונה להפריע ללחיצה */
+}
+
+/* עיצוב הכפתור עצמו כעיגול נקי */
+.nav-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: white;
+    border: none;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s, background-color 0.2s;
+    padding: 0; /* חשוב מאוד כדי שהתמונה לא תזוז מהמרכז */
+}
+
+.nav-btn:hover {
+    transform: scale(1.1);
+    background-color: #f8f9fa;
+}
+
+/* מיקום התפריט בצד - וודאי שזה קיים גם עבור דף השיאים */
+.side-nav {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    z-index: 1000;
+}

@@ -184,61 +184,39 @@ function updateBoard() {
  * @param {Object} clickedPerson - אובייקט הדמות עליה לחץ השחקן כניחוש סופי.
  */
 function guessPerson(clickedPerson) {
-    const welcomeMsg = document.querySelector('h1#gameTitle') || document.querySelector('h2');
-    const main = document.getElementById('mainContent');
+    clearInterval(timerInterval); // עוצר את הטיימר אם הוא עוד רץ
     const questionsArea = document.getElementById('questionsArea');
     const gameBoard = document.getElementById('gameBoard');
+    const isWin = clickedPerson.img === secretPerson.img;
 
-    clearInterval(timerInterval);
+    // 1. חסימת לוח המשחק (שלא יוכלו להמשיך לנחש)
+    gameBoard.style.pointerEvents = "none";
+    gameBoard.style.opacity = "0.4";
 
-    
-    if (questionsArea) questionsArea.remove();
-    if (gameBoard) {
-        gameBoard.style.pointerEvents = "none";
-        gameBoard.style.opacity = "0.5";
+    // 2. שחרור חסימות מה-questionsArea (למקרה שנגמר הזמן קודם)
+    questionsArea.style.opacity = "1";
+    questionsArea.style.pointerEvents = "auto"; 
+
+    // 3. הזרקת תוכן הסיום
+    questionsArea.innerHTML = `
+        <div class="secret-reveal-side">
+            <h2 style="color: ${isWin ? '#fdcb6e' : '#ff4757'}">
+                ${isWin ? 'כל הכבוד, צדקת!' : 'אופס, טעית...'}
+            </h2>
+            <p>הדמות הסודית הייתה:</p>
+            <img src="${secretPerson.img}" alt="secret">
+            
+            <hr style="opacity: 0.2; margin: 15px 0;">
+            
+            <button class="icon-btn" onclick="window.location.href='../index.html'">
+                <img src="../IMAGES/again.png" alt="חדש">
+            </button>
+        </div>
+    `;
+
+    if (isWin) {
+        saveHighScore(localStorage.getItem('user_name'), localStorage.getItem('user_phone'), questionsAsked);
     }
-
-    if (clickedPerson.img === secretPerson.img) {
-        welcomeMsg.textContent = `ניצחת עם ${questionsAsked} שאלות בלבד!`;
-        welcomeMsg.style.color = "green";
-
-        // שליפת הנתונים ששמרנו בדף הכניסה
-        const name = localStorage.getItem('user_name') || "שחקן אנונימי";
-        const phone = localStorage.getItem('user_phone') || "ללא טלפון";
-        
-        // שליחת כל שלושת הפרמטרים בסדר הנכון
-        saveHighScore(name, phone, questionsAsked);
-    }
-
-    else {
-        welcomeMsg.textContent = "הפסדת הפעם...";
-        welcomeMsg.style.color = "red";
-    }
-
-    // יצירת אלמנט חשיפת הדמות
-    const revealDiv = document.createElement('div');
-    revealDiv.className = 'secret-reveal';
-    
-    const revealText = document.createElement('p');
-    revealText.textContent = "הדמות הסודית הייתה:";
-    
-    const revealImg = document.createElement('img');
-    revealImg.src = secretPerson.img;
-    revealImg.style.width = '120px';
-    revealImg.style.borderRadius = '12px';
-    
-    const newGameBtn = document.createElement('button');
-    newGameBtn.textContent = "משחק חדש";
-    newGameBtn.style.marginTop = '15px';
-    // חזרה לדף הבית
-    newGameBtn.onclick = () => window.location.href = '../index.html';
-
-    revealDiv.appendChild(revealText);
-    revealDiv.appendChild(revealImg);
-    revealDiv.appendChild(newGameBtn);
-    main.appendChild(revealDiv);
-
-    
 }
 
 
@@ -289,28 +267,27 @@ function startTimer() {
     timerDisplay.textContent = `זמן נותר: ${timeLeft} שניות`;
     main.prepend(timerDisplay);
 
-    // הגדרת אינטרוול שרץ בכל שנייה 1000 מילישניות לעדכון השעון
     timerInterval = setInterval(() => {
-        timeLeft--; // הפחתת שנייה מהזמן הנותר
+        timeLeft--;
         timerDisplay.textContent = `זמן נותר: ${timeLeft} שניות`;
 
-        // בדיקה האם הזמן נגמר
         if (timeLeft <= 0) {
-            clearInterval(timerInterval); // עצירת פעולת הטיימר
+            clearInterval(timerInterval);
             
-            // חסימת אזור השאלות
+            // במקום לחסום את כל הדיב, נחסום רק את היכולת ללחוץ על שאלות
             const questionsArea = document.getElementById('questionsArea');
             if (questionsArea) {
-                questionsArea.style.opacity = "0.5";
-                questionsArea.style.pointerEvents = "none";
+                // אנחנו רק מחלישים את הנראות, אבל לא נועלים את הדיב עצמו
+                questionsArea.style.opacity = "0.8"; 
+                // חסימת לחיצות רק על כפתורי השאלות שנמצאים בפנים
+                const buttons = questionsArea.querySelectorAll('button');
+                buttons.forEach(btn => btn.style.pointerEvents = "none");
             }
             
-            // עדכון ההודעה למשתמש למצב של הזדמנות אחרונה
-            const welcomeMsg = document.querySelector('h1#gameTitle') || document.querySelector('h2');
-            welcomeMsg.textContent = "נגמר הזמן! נא בחר דמות!...";
+            const welcomeMsg = document.getElementById('gameTitle') || document.querySelector('h2');
+            welcomeMsg.textContent = "נגמר הזמן! נא בחר דמות!";
             welcomeMsg.style.color = "orange";
 
-            // שינוי עיצוב הטיימר כדי להדגיש שנגמר הזמן
             timerDisplay.textContent = "הזדמנות אחרונה!";
             timerDisplay.style.color = "red";
         }
