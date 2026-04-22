@@ -16,7 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const gameTitle = document.getElementById('gameTitle');
     if (playerName && gameTitle) {
-        gameTitle.textContent = `בהצלחה, ${playerName}!`;
+        gameTitle.textContent = `בהצלחה ${playerName}!`;
+        gameTitle.style.textAlign="center";
     }
 
     setupGame(difficulty);
@@ -151,33 +152,42 @@ function renderQuestions(questions, container) {
 }
 
 /**
- * בודקת התאמה בין תשובת השחקן לדמות הסודית ומסננת את המערך בהתאם.
- * @param {string} key - המאפיין שנבדק.
- * @param {string} value - הערך שנבחר.
+ * בודקת התאמה ומסמנת דמויות לא מתאימות כשקופות
  */
 function checkQuestion(key, value) {
     questionsAsked++;
     const isCorrect = secretPerson[key] === value;
 
-    if (isCorrect) {
-        currentPersons = currentPersons.filter(p => p[key] === value);
-    } else {
-        currentPersons = currentPersons.filter(p => p[key] !== value);
-    }
+    // שליפת כל הדמויות שקיימות כרגע על המסך
+    const allCards = document.querySelectorAll('.character-card');
 
-    updateBoard();
+    persons.forEach((person, index) => {
+        const card = allCards[index]; // ניגש לכרטיס לפי האינדקס שלו
+        if (!card) return;
+
+        // בדיקה: האם הדמות הזו עדיין מתאימה לרמז?
+        const matchesCurrentHint = isCorrect ? (person[key] === value) : (person[key] !== value);
+
+        // אם היא לא מתאימה והיא עוד לא "נפסלה" קודם
+        if (!matchesCurrentHint) {
+            card.style.opacity = "0.3";       // שקיפות
+            card.style.transform = "rotate(5deg) scale(0.95)"; // הטיה
+            card.style.pointerEvents = "none"; // חסימת לחיצה
+            card.style.filter = "grayscale(80%)"; // בונוס: הופך אותן לקצת אפורות
+        }
+    });
 }
-
 /**
  * מעדכנת את הלוח הקיים על המסך על ידי החלפתו בלוח חדש ומסונן.
  */
-function updateBoard() {
+/*function updateBoard() {
     const oldBoard = document.getElementById('gameBoard');
     if (oldBoard && oldBoard.parentNode) {
         const newBoard = renderBoard(currentPersons);
         oldBoard.parentNode.replaceChild(newBoard, oldBoard);
     }
 }
+*/
 
 /**
  * בודקת ניחוש סופי של דמות ומציגה את מסך סיום המשחק.
@@ -263,6 +273,7 @@ function startTimer() {
     let timeLeft = 60;
     const main = document.getElementById('mainContent');
     const timerDisplay = document.createElement('h3');
+    timerDisplay.style.color="#6c5ce7";
     timerDisplay.id = "timer";
     timerDisplay.textContent = `זמן נותר: ${timeLeft} שניות`;
     main.prepend(timerDisplay);

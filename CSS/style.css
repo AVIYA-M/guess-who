@@ -1,5 +1,5 @@
 /* טעינת גופן Heebo מודרני */
-@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;700&display=swap');
+@import url('https://googleapis.com');
 
 :root {
     --bg-dark: #0f172a;
@@ -12,14 +12,25 @@
 body {
     font-family: 'Heebo', sans-serif;
     background-color: var(--bg-dark);
-    /* שילוב התמונה שיצרנו כרקע מסתורי */
-    background-image: linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.7)), url('../IMAGES/background.png');
-    background-size: cover;
+    background-image: linear-gradient(rgba(15, 23, 42, 0.5), rgba(15, 23, 42, 0.5)), url('../IMAGES/background.png');
+    background-size: cover;    background-size: cover;
     background-attachment: fixed;
     margin: 0;
     direction: rtl;
     color: var(--text);
 }
+
+
+/* --- תוספת: אנימציית כניסה חלקה לדף --- */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+#loginSection, .game-layout {
+    animation: fadeInUp 0.6s ease-out;
+}
+
 /* צביעת כותרות הטבלה בלבד */
 th {
     color: var(--primary); /* הצבע הזהב המסתורי שלך */
@@ -34,19 +45,16 @@ th, td {
     border-left: 1px solid rgba(255, 255, 255, 0.1); 
 }
 
-/* מסיר את הקו מהעמודה האחרונה (שנמצאת הכי בשמאל) כדי שיהיה נקי */
 th:last-child, td:last-child {
     border-left: none;
 }
 
-/* בונוס: קו מפריד בין הכותרות לשורות הנתונים */
 thead th {
     border-bottom: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 
-
-/* --- דף כניסה כהה (Dark & Elegant) --- */
+/* --- דף כניסה כהה --- */
 #loginSection {
     background: var(--glass-dark);
     backdrop-filter: blur(15px);
@@ -82,7 +90,7 @@ thead th {
 
 #questionsArea {
     flex: 0 0 320px;
-    background: rgba(30, 41, 59, 0.9); /* כהה ומקצועי */
+    background: rgba(30, 41, 59, 0.9);
     padding: 25px;
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
@@ -92,48 +100,72 @@ thead th {
 #gameBoard {
     flex: 1;
     display: grid;
-    /* הגדרה קשיחה של 6 עמודות שוות */
     grid-template-columns: repeat(6, 1fr); 
-    /* רווח אחיד לחלוטין בין התמונות */
     gap: 15px; 
     padding: 20px;
     background: rgba(255, 255, 255, 0.05);
     border-radius: 25px;
     backdrop-filter: blur(5px);
-    /* מוודא שהלוח ממורכז */
     justify-content: center; 
     align-content: start;
 }
 
+/* --- שדרוג: תזוזה לכרטיסי הדמויות --- */
 .character-card {
     background: rgba(255, 255, 255, 0.05);
-    border-radius: 15px;
-    padding: 5px;
-    transition: 0.3s;
+    border-radius: 10px; /* עיגול פינות עדין יותר */
+    padding: 4px; /* מינימום ריפוד מסביב לתמונה */
+    transition: all 0.4s ease-in-out;
+    aspect-ratio: 1 / 1;
+    max-width: 85px; /* הגבלת הרוחב המקסימלי של כל כרטיס */
+    margin: 0 auto; 
     cursor: pointer;
-    /* הופך את הכרטיס לריבוע מושלם תמיד */
-    aspect-ratio: 1 / 1; 
-    width: 100%; /* ממלא את העמודה שלו ב-Grid */
+    width: 100%; 
     display: flex;
     align-items: center;
     justify-content: center;
-    box-sizing: border-box; /* חשוב כדי שה-padding לא יהרוס את הגודל */
+    box-sizing: border-box;
+}
+#gameBoard {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr); /* שומרים על 6 עמודות */
+    gap: 8px; /* הקטנת המרווח בין הכרטיסים מ-15 ל-8 */
+    padding: 10px; /* הקטנת הריפוד הפנימי של הלוח */
+    align-content: start; /* מצמיד את הכרטיסים למעלה */
+}
+
+
+
+.character-card img {
+    width: 70%;
+    height: 70%;
+    object-fit: cover;
+    border-radius: 6px;
+}
+.character-card:hover {
+    transform: translateY(-8px) scale(1.05); /* התמונה עולה למעלה וגדלה מעט */
+    background: rgba(108, 92, 231, 0.15); /* צבע רקע עדין ב-Hover */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+    z-index: 10;
 }
 
 .character-card img {
     width: 100%;
     height: 100%;
-    /* זה הסוד: התמונה נחתכת לריבוע בלי להתעוות */
     object-fit: cover; 
     border-radius: 10px;
+    transition: 0.3s;
 }
 
-/* --- סיום משחק - בתוך אזור השאלות --- */
+
+
+/* --- סיום משחק --- */
 .secret-reveal-side {
     text-align: center;
     color: white;
 }
-/* --- כפתור צא לדרך - הנמכה ועיצוב --- */
+
 .btn-primary {
     background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
     color: white;
@@ -144,7 +176,7 @@ thead th {
     font-weight: bold;
     cursor: pointer;
     transition: 0.3s;
-    margin-top: 30px; /* הנמכה של הכפתור */
+    margin-top: 30px;
     box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
 }
 
@@ -157,11 +189,11 @@ thead th {
 .category-row {
     display: flex;
     flex-direction: column;
-    gap: 12px; /* רווח בין הקטגוריות */
+    gap: 12px;
 }
 
 .cat-btn {
-    background: rgba(255, 255, 255, 0.05); /* מראה חצי שקוף */
+    background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: #e0e0e0;
     padding: 14px 20px;
@@ -175,26 +207,23 @@ thead th {
 
 .cat-btn:hover {
     background: rgba(255, 255, 255, 0.15);
-    color: white;
+    transform: translateX(-5px); /* תזוזה קטנה הצידה ב-Hover */
 }
 
 .cat-btn.active {
     background: var(--primary);
     color: white;
     border-color: var(--primary);
-    box-shadow: 0 0 15px rgba(108, 92, 231, 0.4);
 }
 
-/* --- עיצוב האופציות (התשובות שנפתחות) --- */
 .options-row {
     margin-top: 20px;
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
     padding: 15px;
-    background: rgba(0, 0, 0, 0.2); /* רקע כהה יותר לאזור התשובות */
+    background: rgba(0, 0, 0, 0.2);
     border-radius: 15px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .opt-btn {
@@ -213,13 +242,21 @@ thead th {
     background: var(--primary);
     color: white;
 }
+
 .secret-reveal-side img {
-    width: 150px; /* קטן יותר */
+    width: 150px;
     border-radius: 15px;
     margin: 15px 0;
+    animation: pulse 2s infinite; /* אנימציית דופק עדינה לדמות שנחשפה */
 }
 
-/* כפתור משחק חדש (אייקון קטן ונקי) */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* כפתור משחק חדש */
 .icon-btn {
     background: none;
     border: none;
@@ -229,48 +266,221 @@ thead th {
     transition: 0.2s;
 }
 
-.icon-btn:hover { transform: scale(1.1); }
+.icon-btn:hover { transform: scale(1.2); }
 .icon-btn img {
-    width: 40px; /* קטן ונעים */
+    width: 40px;
+}
+/* עיצוב הכותרת הראשית מחוץ לקופסה */
+.main-game-title {
+        font-family: 'Assistant', sans-serif;
+
+    font-size: 6rem; /* גודל בולט מאוד */
+    font-weight: 900;
+    text-align: center;
+    margin-bottom: 40px; /* רווח מהקופסה שלמטה */
+    color: #ffffff; /* צבע המילוי של האותיות */
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    
+    /* --- תוספת מִתְאָר (Stroke) סגול --- */
+    -webkit-text-stroke: 1.5px #6c5ce7; /* עובי וצבע המִתְאָר */
+    
+    /* אפקט הצללה משודרג כדי להבליט את המִתְאָר והטקסט */
+    text-shadow: 2px 2px 0px #6c5ce7, 5px 5px 15px rgba(0,0,0,0.3);
+
+    
+    animation: fadeInDown 0.8s ease-out;
 }
 
-/* מוודא שהאייקון בתוך הכפתור לא קופץ */
-.nav-btn img {
-    width: 30px;
-    height: 30px;
-    display: block; /* מונע רווחים מיותרים בתחתית התמונה */
-    pointer-events: none; /* מונע מהתמונה להפריע ללחיצה */
+
+
+
+/* אנימציית כניסה לכותרת */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-/* עיצוב הכפתור עצמו כעיגול נקי */
-.nav-btn {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: white;
+/* התאמה למסכים קטנים (טלפונים) */
+@media (max-width: 600px) {
+    .main-game-title {
+        font-size: 2.5rem;
+    }
+    .main-game-title .subtitle {
+        letter-spacing: 4px;
+    }
+}
+.options-row {
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 15px;
+}
+.icon-btn {
+    background: none;
     border: none;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    cursor: pointer;
+    padding: 0;
+    margin-top: 10px;
+    transition: 0.2s;
+}
+
+.icon-btn:hover { transform: scale(1.2); }
+
+.icon-btn img {
+    width: 40px;
+}
+.btn-primary {
+    background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 12px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-top: 30px;
+    box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(108, 92, 231, 0.5);
+}
+.secret-reveal-side {
+    text-align: center;
+    color: white;
+}
+/* מוודא שהקטגוריות מסודרות בטור */
+.category-row {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+/* ניווט צדדי - כפתור חזרה הביתה */
+.side-nav {
+    position: fixed;
+    top: 20px;
+    right: 20px; /* אם את רוצה אותו בצד ימין */
+    z-index: 1000;
+}
+
+.nav-btn {
+    width: 50px;
+    height: 50px;
+    margin: 5px;
+    padding: 10px;
+    border-radius: 50%;
+    background: var(--primary); /* משתמש בצבע הסגול היפה שלך */
+    border: none;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: transform 0.2s, background-color 0.2s;
-    padding: 0; /* חשוב מאוד כדי שהתמונה לא תזוז מהמרכז */
+    transition: all 0.3s ease;
+}
+
+.nav-btn img {
+    width: 25px; /* גודל האייקון בתוך הכפתור */
+    filter: brightness(0) invert(1); /* הופך את האייקון ללבן אם הוא שחור */
 }
 
 .nav-btn:hover {
-    transform: scale(1.1);
-    background-color: #f8f9fa;
+    transform: scale(1.1) rotate(-10deg);
+    background: var(--accent); /* הופך לזהב במעבר עכבר */
+}
+#gameDiv {
+    display: flex;
+    align-items: center;      /* יישור גובה מושלם */
+    justify-content: space-between; /* דוחף את האלמנטים לקצוות */
+    padding: 10px;       /* נותן קצת רווח מהקירות */
+    width: 100%;
+    box-sizing: border-box;
 }
 
-/* מיקום התפריט בצד - וודאי שזה קיים גם עבור דף השיאים */
-.side-nav {
-    position: fixed;
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    z-index: 1000;
+/* טריק כדי שהכותרת תהיה בדיוק באמצע: */
+#gameTitle {
+    flex-grow: 1;             /* תופס את כל המרחב הפנוי */
+    text-align: center;       /* ממרכז את הטקסט בתוך המרחב הזה */
+    margin: 0;                /* מאפס מרווחים שיכולים להרוס את המרכוז */
+}
+
+/* עיצוב הכפתור שיהיה בצד */
+#gameDiv .nav-btn {
+    position: static;         /* מוודא שהוא לא צף */
+    order: -1;                /* דוחף אותו להיות הראשון (בצד ימין ב-RTL) */
+}
+/*////////////////////////////////////////////////////////////////////////////////////////////////////*/
+
+/* מסכים קטנים מ-900 פיקסלים */
+@media (max-width: 900px) {
+    .game-layout {
+        flex-direction: column; /* השאלות יעברו למעלה, הלוח למטה */
+        align-items: center;
+        gap: 20px;
+    }
+
+    #questionsArea {
+        flex: none;
+        width: 100%; /* תופס את כל רוחב המסך */
+        max-width: 500px;
+        box-sizing: border-box;
+    }
+
+    #gameBoard {
+        grid-template-columns: repeat(4, 1fr); /* 4 דמויות בשורה במקום 6 */
+        gap: 8px;
+    }
+}
+@media (max-width: 500px) {
+    .main-game-title {
+        font-size: 2.2rem; /* הקטנת הכותרת הראשית */
+    }
+
+    #gameBoard {
+        grid-template-columns: repeat(3, 1fr); /* 3 דמויות בשורה בלבד */
+        padding: 5px;
+    }
+
+    .character-card {
+        max-width: 70px; /* הקטנת הכרטיסים */
+    }
+
+    /* התאמת כפתורי הקטגוריות שיהיו קריאים */
+    .cat-btn {
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+
+    /* כפתור הבית והכותרת במשחק */
+    #gameDiv {
+        flex-direction: row;
+        justify-content: space-around;
+    }
+    
+    #gameTitle {
+        font-size: 1.5rem;
+    }
+}
+.table-container {
+    overflow-x: auto; /* מאפשר גלילה לצדדים רק לטבלה אם היא רחבה מדי */
+    width: 100%;
+}
+
+@media (max-width: 600px) {
+    th, td {
+        padding: 8px 10px; /* הקטנת המרווחים בטבלה */
+        font-size: 0.85rem;
+    }
 }
