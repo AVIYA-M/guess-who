@@ -10,14 +10,21 @@ let questionsAsked = 0;
  * מחכה לטעינת ה-DOM, מחלץ נתונים מה-URL ומפעיל את המשחק.
  */
 document.addEventListener('DOMContentLoaded', () => {
-    const params = new URLSearchParams(window.location.search);
-    const playerName = params.get('name');
-    const difficulty = params.get('level');
+const params = new URLSearchParams(window.location.search);
+    
+    // ניסיון לקחת מה-URL, ואם אין - לקחת מהזיכרון של הדפדפן
+    let playerName = params.get('name') || sessionStorage.getItem('playerName');
+    let difficulty = params.get('level') || sessionStorage.getItem('user_level');
+
+    // שמירה בזיכרון לשימוש עתידי (במשחק החוזר)
+    if (playerName) sessionStorage.setItem('playerName', playerName);
+    if (difficulty) sessionStorage.setItem('user_level', difficulty);
 
     const gameTitle = document.getElementById('gameTitle');
     if (playerName && gameTitle) {
         gameTitle.textContent = `בהצלחה ${playerName}!`;
-        gameTitle.style.textAlign="center";
+        gameTitle.style.textAlign = "center";
+        gameTitle.style.webkitTextStroke = "1px var(--bg-dark)";
     }
 
     setupGame(difficulty);
@@ -218,7 +225,7 @@ function guessPerson(clickedPerson) {
             
             <hr style="opacity: 0.2; margin: 15px 0;">
             
-            <button class="icon-btn" onclick="window.location.href='../index.html'">
+            <button class="icon-btn" onclick="window.location.href='../HTML/game.html'">
                 <img src="../IMAGES/again.png" alt="חדש">
             </button>
         </div>
@@ -273,7 +280,7 @@ function startTimer() {
     let timeLeft = 60;
     const main = document.getElementById('mainContent');
     const timerDisplay = document.createElement('h3');
-    timerDisplay.style.color="#6c5ce7";
+    timerDisplay.style.color="#ffeb3b";
     timerDisplay.id = "timer";
     timerDisplay.textContent = `זמן נותר: ${timeLeft} שניות`;
     main.prepend(timerDisplay);

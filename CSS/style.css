@@ -1,18 +1,26 @@
 /* טעינת גופן Heebo מודרני */
 @import url('https://googleapis.com');
 
+
+
 :root {
-    --bg-dark: #0f172a;
-    --glass-dark: rgba(15, 23, 42, 0.85); /* כניסה כהה */
-    --accent: #fdcb6e;
-    --primary: #6c5ce7;
-    --text: #ffffff;
+    /* צבעי הרקע והזכוכית - מבוסס על החום הכהה מהתמונה */
+    --bg-dark: #2c1e1a; 
+    --glass-dark: rgba(44, 30, 26, 0.85); 
+    
+    /* צבעי דגש (Vibrant) מהפאזל והתמונה */
+    --primary: #7b4397;     /* הסגול העמוק מהפאזל */
+    --secondary: #0093d7;   /* הכחול הבהיר מהפאזל */
+    --accent: #ffeb3b;      /* הצהוב של סימני השאלה */
+    --wood: #8d5524;        /* החום של מסגרת העץ */
+    --text: #fdf5e6;        /* הקרם הבהיר של חלקי הפאזל לטקסט */
+    
 }
 
 body {
     font-family: 'Heebo', sans-serif;
     background-color: var(--bg-dark);
-    background-image: linear-gradient(rgba(15, 23, 42, 0.5), rgba(15, 23, 42, 0.5)), url('../IMAGES/background.png');
+    background-image: linear-gradient(rgba(15, 23, 42, 0.5), rgba(15, 23, 50, 0.5)), url('../IMAGES/background.png');
     background-size: cover;    background-size: cover;
     background-attachment: fixed;
     margin: 0;
@@ -33,7 +41,7 @@ body {
 
 /* צביעת כותרות הטבלה בלבד */
 th {
-    color: var(--primary); /* הצבע הזהב המסתורי שלך */
+    color: var(--accent); /* הצבע הזהב המסתורי שלך */
     font-size: 1.2rem;
     padding: 15px;
     border-bottom: 2px solid rgba(255, 255, 255, 0.1);
@@ -74,7 +82,7 @@ thead th {
     border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.2);
     background: rgba(0, 0, 0, 0.3);
-    color: white;
+    color: var(--text);
     box-sizing: border-box;
 }
 
@@ -90,7 +98,7 @@ thead th {
 
 #questionsArea {
     flex: 0 0 320px;
-    background: rgba(30, 41, 59, 0.9);
+    background: rgba(44, 30, 26, 0.9); /* החום הכהה שלך ב-60% אטימות */
     padding: 25px;
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
@@ -103,7 +111,7 @@ thead th {
     grid-template-columns: repeat(6, 1fr); 
     gap: 15px; 
     padding: 20px;
-    background: rgba(255, 255, 255, 0.05);
+   background: rgba(44, 30, 26, 0.9); /* החום הכהה שלך ב-60% אטימות */
     border-radius: 25px;
     backdrop-filter: blur(5px);
     justify-content: center; 
@@ -137,12 +145,7 @@ thead th {
 
 
 
-.character-card img {
-    width: 70%;
-    height: 70%;
-    object-fit: cover;
-    border-radius: 6px;
-}
+
 .character-card:hover {
     transform: translateY(-8px) scale(1.05); /* התמונה עולה למעלה וגדלה מעט */
     background: rgba(108, 92, 231, 0.15); /* צבע רקע עדין ב-Hover */
@@ -153,9 +156,10 @@ thead th {
 .character-card img {
     width: 100%;
     height: 100%;
-    object-fit: cover; 
     border-radius: 10px;
     transition: 0.3s;
+    object-fit: contain; /* שומר על פרופורציות התמונה ומוודא שהיא נכנסת כולה למסגרת */
+    display: block;
 }
 
 
@@ -163,12 +167,12 @@ thead th {
 /* --- סיום משחק --- */
 .secret-reveal-side {
     text-align: center;
-    color: white;
+    color:var(--text);
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
-    color: white;
+    background: linear-gradient(135deg, #7b4397 0%, #0093d7 100%);
+    color: var(--text);
     border: none;
     padding: 15px 30px;
     border-radius: 12px;
@@ -212,7 +216,7 @@ thead th {
 
 .cat-btn.active {
     background: var(--primary);
-    color: white;
+    color: var(--text);
     border-color: var(--primary);
 }
 
@@ -227,9 +231,9 @@ thead th {
 }
 
 .opt-btn {
-    background: transparent;
-    border: 1.5px solid var(--primary);
-    color: var(--primary);
+    background:#8d5524;
+    border: 1.5px solid var(--text);
+    color: var(--text);
     padding: 8px 16px;
     border-radius: 20px;
     cursor: pointer;
@@ -240,7 +244,8 @@ thead th {
 
 .opt-btn:hover {
     background: var(--primary);
-    color: white;
+    
+    color: var(--text);
 }
 
 .secret-reveal-side img {
@@ -258,35 +263,59 @@ thead th {
 
 /* כפתור משחק חדש */
 .icon-btn {
-    background: none;
-    border: none;
+    /* רקע קבוע - השתמשתי בסגול מהפלטה עם שקיפות כדי שלא יהיה אטום מדי */
+    background: rgba(123, 67, 151, 0.2); 
+    
+    /* מסגרת עגולה וקבועה */
+    border: 2px solid var(--secondary); /* הכחול מהפלטה */
+    border-radius: 50%;
+    
+    /* מימדים קבועים ליצירת עיגול מושלם */
+    width: 65px;
+    height: 65px;
+    
+    /* מרכוז האייקון */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    
     cursor: pointer;
-    padding: 0;
     margin-top: 10px;
-    transition: 0.2s;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
 }
 
-.icon-btn:hover { transform: scale(1.2); }
+/* אפקט בזמן מעבר עכבר (Hover) */
+.icon-btn:hover {
+    transform: scale(1.1);
+    /* הופך ליותר בהיר ובולט במעבר עכבר */
+    background: var(--accent); 
+    box-shadow: 0 0 15px var(--primary); /* אפקט הילה מסביב לעיגול */
+}
+
 .icon-btn img {
-    width: 40px;
+    width: 32px;
+    height: auto;
+    /* אם האייקון שחור, השורה הבאה תהפוך אותו ללבן/קרם כדי שיראו אותו טוב */
+    filter: brightness(0) invert(1); 
 }
 /* עיצוב הכותרת הראשית מחוץ לקופסה */
 .main-game-title {
-        font-family: 'Assistant', sans-serif;
+    font-family: 'Assistant', sans-serif;
 
     font-size: 6rem; /* גודל בולט מאוד */
     font-weight: 900;
     text-align: center;
     margin-bottom: 40px; /* רווח מהקופסה שלמטה */
-    color: #ffffff; /* צבע המילוי של האותיות */
+    color: var(--text); /* צבע המילוי של האותיות */
     text-transform: uppercase;
     letter-spacing: 2px;
     
     /* --- תוספת מִתְאָר (Stroke) סגול --- */
-    -webkit-text-stroke: 1.5px #6c5ce7; /* עובי וצבע המִתְאָר */
+    -webkit-text-stroke: 1.5px #7b4397; /* עובי וצבע המִתְאָר */
     
     /* אפקט הצללה משודרג כדי להבליט את המִתְאָר והטקסט */
-    text-shadow: 2px 2px 0px #6c5ce7, 5px 5px 15px rgba(0,0,0,0.3);
+    text-shadow: 2px 2px 0px #7b4397, 5px 5px 15px rgba(0,0,0,0.3);
 
     
     animation: fadeInDown 0.8s ease-out;
@@ -340,8 +369,8 @@ thead th {
     width: 40px;
 }
 .btn-primary {
-    background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
-    color: white;
+    background: linear-gradient(135deg, #7b4397 0%, #0093d7 100%);
+    color: var(--text);
     border: none;
     padding: 15px 30px;
     border-radius: 12px;
@@ -359,7 +388,7 @@ thead th {
 }
 .secret-reveal-side {
     text-align: center;
-    color: white;
+    color: var(--text);
 }
 /* מוודא שהקטגוריות מסודרות בטור */
 .category-row {
@@ -381,8 +410,8 @@ thead th {
     margin: 5px;
     padding: 10px;
     border-radius: 50%;
-    background: var(--primary); /* משתמש בצבע הסגול היפה שלך */
-    border: none;
+    background: var(--primary); /* משתמש בצבע הסגול היפה */
+     border: 2px solid var(--bg-dark);
     box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     cursor: pointer;
     display: flex;
