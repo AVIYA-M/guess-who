@@ -11,6 +11,7 @@ let questionsAsked = 0;
  */
 document.addEventListener('DOMContentLoaded', () => {
     const backHomeBtn = document.getElementById('backHome');
+    
     if (backHomeBtn) {
     backHomeBtn.addEventListener('click', () => {
         window.location.href = '../index.html';
@@ -55,7 +56,7 @@ function startTheGame() {
     currentPersons = [...persons];
     const mainContent = document.getElementById('mainContent');
     
-    // ניקוי המסך בעזרת לולאה (חלופה בטוחה ל-innerHTML שאינה מותרת)
+    // ניקוי המסך בעזרת לולאה 
     while (mainContent.firstChild) {
         mainContent.removeChild(mainContent.firstChild);
     }
@@ -121,7 +122,7 @@ function renderBoard(data) {
  * בונה את ממשק השאלות והתשובות בתוך הקונטיינר הנבחר.
  */
 function renderQuestions(questions, container) {
-    // ניקוי הקונטיינר ללא שימוש ב-innerHTML
+    // ניקוי הקונטיינר
     while (container.firstChild) {
         container.removeChild(container.firstChild);
     }
@@ -139,7 +140,7 @@ function renderQuestions(questions, container) {
 
         // הגדרת אירוע לחיצה על קטגוריה להצגת האופציות שלה
         catBtn.onclick = () => {
-            // שימוש ב-querySelectorAll לניהול מצב 'active' עיצובי
+            // הסרת מצב 'active' מכל הכפתורים והוספה לכפתור שנלחץ
             document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
             catBtn.classList.add('active');
             
@@ -278,7 +279,8 @@ function saveHighScore(name, phone, score) {
             leaderboard[existingPlayerIndex].score = score;
             leaderboard[existingPlayerIndex].date = new Date().toLocaleDateString();
         }
-    } else {
+    } 
+    else {
         // הוספת שחקן חדש למערך
         leaderboard.push({ name, phone, score, date: new Date().toLocaleDateString() });
     }
@@ -320,7 +322,7 @@ function startTimer() {
             const welcomeMsg = document.getElementById('gameTitle');
             if (welcomeMsg) {
                 welcomeMsg.textContent = "נגמר הזמן! נא בחר דמות!";
-                welcomeMsg.style.color = "orange";
+                welcomeMsg.style.color = "#ffeb3b";
             }
         }
     }, 1000);
