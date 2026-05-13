@@ -7,32 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;700&display=swap" rel="stylesheet">
     <script type="module" src="JS/login.js"></script>
     
-    <style>
-        /* עיצוב המודל */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0; top: 0;
-            width: 100%; height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            color:var(--glass-dark);
-        }
-        .modal-content {
-            background-color: white;
-            margin: 10% auto;
-            padding: 25px;
-            border-radius: 15px;
-            width: 50%;
-            position: relative;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
-        .close-button {
-            position: absolute;
-            top: 10px; left: 15px;
-            font-size: 28px; cursor: pointer;
-        }
-    </style>
+
 </head>
 <body>
     <nav class="side-nav">
@@ -71,8 +46,7 @@
             <form id="loginForm">
                 <input type="text" id="playerName" placeholder="הכנס שם שחקן" required style="padding: 10px; margin: 5px;">
                 <br>
-                <input type="tel" id="playerPhone" placeholder="טלפון (למשל 050...)" required 
-                       oninput="this.value = this.value.replace(/[^0-9]/g, '')" style="padding: 10px; margin: 5px;">
+                <input type="tel" id="playerPhone" placeholder="טלפון (למשל 050...)" required style="padding: 10px; margin: 5px;">
                 <br>
                 <select id="difficulty" style="padding: 10px; margin: 5px;">
                     <option value="easy">קל</option>

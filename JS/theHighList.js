@@ -6,6 +6,12 @@
 document.addEventListener('DOMContentLoaded', () => {
     const container = document.getElementById('highListContainer');
     const backBtn = document.getElementById('backToHome');
+    if (backBtn) {
+        backBtn.addEventListener('click', () => {
+            // שימוש ב-BOM למעבר דף (דרישה 26)
+            window.location.href = '../index.html';
+        });
+    }
 
     //  כפתור חזרה למסך הבית
     if (backBtn) {

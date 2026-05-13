@@ -1,6 +1,6 @@
-
 import { persons, questionsType } from './data.js';
 
+// משתנים גלובליים לניהול מצב המשחק
 let secretPerson;
 let currentPersons = [...persons];
 let timerInterval;
@@ -10,31 +10,40 @@ let questionsAsked = 0;
  * מחכה לטעינת ה-DOM, מחלץ נתונים מה-URL ומפעיל את המשחק.
  */
 document.addEventListener('DOMContentLoaded', () => {
-const params = new URLSearchParams(window.location.search);
+    const backHomeBtn = document.getElementById('backHome');
+    if (backHomeBtn) {
+    backHomeBtn.addEventListener('click', () => {
+        window.location.href = '../index.html';
+    });
+    }
+    // שימוש ב-BOM כדי לחלץ פרמטרים מכתובת ה-URL
+    const params = new URLSearchParams(window.location.search);
     
-    // ניסיון לקחת מה-URL, ואם אין - לקחת מהזיכרון של הדפדפן
+    // שליפת שם השחקן והרמה (עדיפות ל-URL, גיבוי ב-SessionStorage)
     let playerName = params.get('name') || sessionStorage.getItem('playerName');
     let difficulty = params.get('level') || sessionStorage.getItem('user_level');
 
-    // שמירה בזיכרון לשימוש עתידי (במשחק החוזר)
+    // שמירה בזיכרון לשימוש עתידי במקרה של משחק חוזר
     if (playerName) sessionStorage.setItem('playerName', playerName);
     if (difficulty) sessionStorage.setItem('user_level', difficulty);
 
     const gameTitle = document.getElementById('gameTitle');
     if (playerName && gameTitle) {
+        // שימוש ב-textContent (בטוח יותר מ-innerHTML) לעדכון הכותרת
         gameTitle.textContent = `בהצלחה ${playerName}!`;
         gameTitle.style.textAlign = "center";
         gameTitle.style.webkitTextStroke = "1px var(--bg-dark)";
     }
 
+    // הפעלת אתחול המשחק
     setupGame(difficulty);
 });
 
 /**
  * מאתחלת את הגדרות המשחק לפי הרמה שנבחרה ומפעילה אותו.
- * @param {string} level - רמת הקושי.
  */
 function setupGame(level) {
+    // שמירת רמת הקושי ב-localStorage לשימוש בפונקציות אחרות
     localStorage.setItem('user_level', level);
     startTheGame();
 }
@@ -46,29 +55,33 @@ function startTheGame() {
     currentPersons = [...persons];
     const mainContent = document.getElementById('mainContent');
     
-    // ניקוי המסך
+    // ניקוי המסך בעזרת לולאה (חלופה בטוחה ל-innerHTML שאינה מותרת)
     while (mainContent.firstChild) {
         mainContent.removeChild(mainContent.firstChild);
     }
 
+    // יצירה דינמית של אלמנט ה-Layout המרכזי
     const gameLayout = document.createElement('div');
     gameLayout.className = 'game-layout';
     mainContent.appendChild(gameLayout);
 
+    // יצירת אזור השאלות
     const questionsArea = document.createElement('div');
     questionsArea.id = 'questionsArea';
     gameLayout.appendChild(questionsArea);
 
+    // רינדור לוח המשחק (הקלפים)
     const board = renderBoard(currentPersons);
     gameLayout.appendChild(board);
 
-    // הגרלת דמות סודית
+    // הגרלת דמות סודית מתוך המערך בעזרת Math.random
     secretPerson = persons[Math.floor(Math.random() * persons.length)];
     console.log("דמות סודית:", secretPerson);
     
+    // בניית כפתורי השאלות לפי קטגוריות
     renderQuestions(questionsType, questionsArea);
 
-    // בדיקה אם להפעיל טיימר לפי הרמה שנשמרה
+    // הפעלת טיימר רק אם רמת הקושי היא 'hard'
     if (localStorage.getItem('user_level') === 'hard') {
         startTimer();
     }
@@ -76,15 +89,13 @@ function startTheGame() {
 
 /**
  * מייצרת את אלמנט ה-DOM של לוח המשחק.
- * @param {Array<Object>} data - מערך הדמויות להצגה על הלוח.
- * @returns {HTMLElement} אלמנט ה-div המכיל את כרטיסי הדמויות.
  */
 function renderBoard(data) {
     const board = document.createElement('div');
     board.id = 'gameBoard';
     board.style.gap = '10px';
 
-    // לולאה העוברת על כל דמות במערך ומייצרת עבורה כרטיס 
+    // לולאה העוברת על כל דמות ומייצרת עבורה כרטיס (DOM דינמי)
     data.forEach((person) => {
         const card = document.createElement('div');
         card.className = 'character-card';
@@ -94,7 +105,7 @@ function renderBoard(data) {
         img.alt = "דמות";
         img.style.width = '100px';
 
-        // הוספת לחיצה לכל תמונה לביצוע ניחוש סופי של הדמות
+        // הוספת אירוע קליק לכל תמונה לביצוע ניחוש סופי
         img.addEventListener('click', () => {
             guessPerson(person);
         });
@@ -108,11 +119,9 @@ function renderBoard(data) {
 
 /**
  * בונה את ממשק השאלות והתשובות בתוך הקונטיינר הנבחר.
- * @param {Array<Object>} questions - מערך אובייקטי השאלות מה-data.
- * @param {HTMLElement} container - האלמנט שבתוכו ירונדרו השאלות.
  */
 function renderQuestions(questions, container) {
-    // ניקוי הקונטיינר ללא innerHTML
+    // ניקוי הקונטיינר ללא שימוש ב-innerHTML
     while (container.firstChild) {
         container.removeChild(container.firstChild);
     }
@@ -122,30 +131,30 @@ function renderQuestions(questions, container) {
     const optionsRow = document.createElement('div');
     optionsRow.className = 'options-row';
 
-    // לולאה ראשית- עוברת על כל קטגוריית שאלות ומייצרת כפתור קטגוריה
+    // מעבר על כל קטגוריה ליצירת כפתורי תפריט
     questions.forEach(q => {
         const catBtn = document.createElement('button');
         catBtn.className = 'cat-btn';
         catBtn.textContent = q.title;
 
-        // הגדרת פעולה בעת לחיצה על קטגוריה: הצגת השאלות הספציפיות לאותה קטגוריה
+        // הגדרת אירוע לחיצה על קטגוריה להצגת האופציות שלה
         catBtn.onclick = () => {
-            // הסרת מחלקת 'active' מכל הכפתורים והוספתה לכפתור שנלחץ לצורך עיצוב
+            // שימוש ב-querySelectorAll לניהול מצב 'active' עיצובי
             document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
             catBtn.classList.add('active');
             
-            // ניקוי אזור האופציות הקודם לפני הצגת האופציות של הקטגוריה החדשה
+            // ניקוי אופציות קודמות
             while (optionsRow.firstChild) {
                 optionsRow.removeChild(optionsRow.firstChild);
             }
 
-            // לולאה פנימית- מייצרת כפתור לכל ערך אפשרי בקטגוריה שנבחרה
+            // יצירת כפתור לכל ערך בקטגוריה הנבחרת
             q.questions.forEach(val => {
                 const optBtn = document.createElement('button');
                 optBtn.className = 'opt-btn';
                 optBtn.textContent = val;
                 
-                // בעת לחיצה על ערך, מתבצעת בדיקה האם המאפיין קיים בדמות הסודית
+                // בדיקת השאלה מול הדמות הסודית בעת לחיצה
                 optBtn.onclick = () => checkQuestion(q.key, val);
                 
                 optionsRow.appendChild(optBtn);
@@ -159,129 +168,138 @@ function renderQuestions(questions, container) {
 }
 
 /**
- * בודקת התאמה ומסמנת דמויות לא מתאימות כשקופות
+ * בודקת התאמה ומסמנת דמויות לא מתאימות כשקופות.
  */
 function checkQuestion(key, value) {
-    questionsAsked++;
+    questionsAsked++; // מעקב אחר מספר השאלות לטובת הניקוד
     const isCorrect = secretPerson[key] === value;
 
-    // שליפת כל הדמויות שקיימות כרגע על המסך
+    // שליפת כל הקלפים הקיימים לביצוע עדכון ויזואלי
     const allCards = document.querySelectorAll('.character-card');
 
     persons.forEach((person, index) => {
-        const card = allCards[index]; // ניגש לכרטיס לפי האינדקס שלו
+        const card = allCards[index];
         if (!card) return;
 
-        // בדיקה: האם הדמות הזו עדיין מתאימה לרמז?
+        // לוגיקה לבדיקת התאמה: אם התשובה "כן", נפסול את מי שאין לו. אם "לא", נפסול את מי שיש לו.
         const matchesCurrentHint = isCorrect ? (person[key] === value) : (person[key] !== value);
 
-        // אם היא לא מתאימה והיא עוד לא "נפסלה" קודם
+        // שינוי מאפייני CSS דרך ה-JS לפסילת דמויות
         if (!matchesCurrentHint) {
+
             card.style.opacity = "0.3";       // שקיפות
+
             card.style.transform = "rotate(5deg) scale(0.95)"; // הטיה
+
             card.style.pointerEvents = "none"; // חסימת לחיצה
+
             card.style.filter = "grayscale(80%)"; // בונוס: הופך אותן לקצת אפורות
-        }
+    }
     });
 }
-/**
- * מעדכנת את הלוח הקיים על המסך על ידי החלפתו בלוח חדש ומסונן.
- */
-/*function updateBoard() {
-    const oldBoard = document.getElementById('gameBoard');
-    if (oldBoard && oldBoard.parentNode) {
-        const newBoard = renderBoard(currentPersons);
-        oldBoard.parentNode.replaceChild(newBoard, oldBoard);
-    }
-}
-*/
 
 /**
- * בודקת ניחוש סופי של דמות ומציגה את מסך סיום המשחק.
- * @param {Object} clickedPerson - אובייקט הדמות עליה לחץ השחקן כניחוש סופי.
+ * פונקציה מעודכנת  - בודקת ניחוש ומציגה מסך סיום.
  */
 function guessPerson(clickedPerson) {
-    clearInterval(timerInterval); // עוצר את הטיימר אם הוא עוד רץ
+    // עצירת הטיימר ב-BOM
+    clearInterval(timerInterval);
     const questionsArea = document.getElementById('questionsArea');
     const gameBoard = document.getElementById('gameBoard');
+    
+    // בדיקה האם התמונה שלחצו עליה היא התמונה הסודית
     const isWin = clickedPerson.img === secretPerson.img;
 
-    // 1. חסימת לוח המשחק (שלא יוכלו להמשיך לנחש)
+    // חסימת לוח המשחק למניעת ניחושים נוספים
     gameBoard.style.pointerEvents = "none";
     gameBoard.style.opacity = "0.4";
 
-    // 2. שחרור חסימות מה-questionsArea (למקרה שנגמר הזמן קודם)
-    questionsArea.style.opacity = "1";
-    questionsArea.style.pointerEvents = "auto"; 
+    // ניקוי אזור השאלות לצורך הצגת תוצאה 
+    while (questionsArea.firstChild) {
+        questionsArea.removeChild(questionsArea.firstChild);
+    }
 
-    // 3. הזרקת תוכן הסיום
-    questionsArea.innerHTML = `
-        <div class="secret-reveal-side">
-            <h2 style="color: ${isWin ? '#fdcb6e' : '#ff4757'}">
-                ${isWin ? 'כל הכבוד, צדקת!' : 'אופס, טעית...'}
-            </h2>
-            <p>הדמות הסודית הייתה:</p>
-            <img src="${secretPerson.img}" alt="secret">
-            
-            <hr style="opacity: 0.2; margin: 15px 0;">
-            
-            <button class="icon-btn" onclick="window.location.href='../HTML/game.html'">
-                <img src="../IMAGES/again.png" alt="חדש">
-            </button>
-        </div>
-    `;
+    // יצירה דינמית של מסך הסיום 
+    const revealDiv = document.createElement('div');
+    revealDiv.className = 'secret-reveal-side';
 
+    revealDiv.style.display = "flex";
+    revealDiv.style.flexDirection = "column";
+    revealDiv.style.alignItems = "center";
+    revealDiv.style.justifyContent = "center";
+    revealDiv.style.textAlign = "center";
+    revealDiv.style.width = "100%";
+
+    const resultTitle = document.createElement('h2');
+    resultTitle.textContent = isWin ? 'כל הכבוד, צדקת!' : 'אופס, טעית...';
+    resultTitle.style.color = isWin ? '#fdcb6e' : '#ff4757';
+
+    const revealText = document.createElement('p');
+    revealText.textContent = 'הדמות הסודית הייתה:';
+
+    const secretImg = document.createElement('img');
+    secretImg.src = secretPerson.img;
+    
+    // כפתור למשחק חוזר
+    const retryBtn = document.createElement('button');
+    retryBtn.className = 'icon-btn';
+    retryBtn.onclick = () => window.location.href='../HTML/game.html';
+    
+    const btnImg = document.createElement('img');
+    btnImg.src = "../IMAGES/again.png";
+    retryBtn.appendChild(btnImg);
+
+    // חיבור האלמנטים לפי הסדר
+    revealDiv.appendChild(resultTitle);
+    revealDiv.appendChild(revealText);
+    revealDiv.appendChild(secretImg);
+    revealDiv.appendChild(retryBtn);
+    questionsArea.appendChild(revealDiv);
+
+    // שמירת שיא רק במקרה של ניצחון
     if (isWin) {
         saveHighScore(localStorage.getItem('user_name'), localStorage.getItem('user_phone'), questionsAsked);
     }
 }
 
-
-
 /**
- * שומרת את התוצאה בטבלת השיאים.
- * @param {string} name - שם השחקן.
- * @param {string} phone - טלפון השחקן.
- * @param {number} score - מספר רמזים.
+ * שומרת את התוצאה ב-localStorage עם שימוש ב-HOF (findIndex, sort).
  */
 function saveHighScore(name, phone, score) {
+    // שליפה והמרה של מחרוזת JSON מה-storage למערך אובייקטים
     let leaderboard = JSON.parse(localStorage.getItem('highList')) || [];
     
-    // חיפוש שחקן קיים לפי הטלפון 
+    // שימוש ב-findIndex למציאת שחקן קיים 
     const existingPlayerIndex = leaderboard.findIndex(p => p.phone === phone);
 
     if (existingPlayerIndex !== -1) {
-        // השחקן קיים - נעדכן רק אם התוצאה הנוכחית טובה יותר (פחות שאלות)
+        // עדכון תוצאה רק אם היא טובה יותר מהקודמת
         if (score < leaderboard[existingPlayerIndex].score) {
             leaderboard[existingPlayerIndex].score = score;
             leaderboard[existingPlayerIndex].date = new Date().toLocaleDateString();
         }
     } else {
-        // שחקן חדש - נוסיף אותו למערך
-        leaderboard.push({
-            name: name,
-            phone: phone,
-            score: score,
-            date: new Date().toLocaleDateString()
-        });
+        // הוספת שחקן חדש למערך
+        leaderboard.push({ name, phone, score, date: new Date().toLocaleDateString() });
     }
 
-    // מיון ושמירה
+    // מיון המערך לפי הניקוד 
     leaderboard.sort((a, b) => a.score - b.score);
+    // שמירה חזרה ב-storage כמחרוזת
     localStorage.setItem('highList', JSON.stringify(leaderboard));
 }
 
-
-
 /**
- * מפעילה טיימר ספירה לאחור ומסיימת את המשחק במקרה של חריגה מהזמן.
+ * מפעילה טיימר ספירה לאחור בעזרת setInterval.
  */
 function startTimer() {
     let timeLeft = 60;
     const main = document.getElementById('mainContent');
     const timerDisplay = document.createElement('h3');
-    timerDisplay.style.color="#ffeb3b";
     timerDisplay.id = "timer";
+    timerDisplay.style.color="#ffeb3b";
+    timerDisplay.style.margin="5px";
+
     timerDisplay.textContent = `זמן נותר: ${timeLeft} שניות`;
     main.prepend(timerDisplay);
 
@@ -289,25 +307,21 @@ function startTimer() {
         timeLeft--;
         timerDisplay.textContent = `זמן נותר: ${timeLeft} שניות`;
 
+        // טיפול במקרה שנגמר הזמן
         if (timeLeft <= 0) {
             clearInterval(timerInterval);
-            
-            // במקום לחסום את כל הדיב, נחסום רק את היכולת ללחוץ על שאלות
             const questionsArea = document.getElementById('questionsArea');
             if (questionsArea) {
-                // אנחנו רק מחלישים את הנראות, אבל לא נועלים את הדיב עצמו
                 questionsArea.style.opacity = "0.8"; 
-                // חסימת לחיצות רק על כפתורי השאלות שנמצאים בפנים
-                const buttons = questionsArea.querySelectorAll('button');
-                buttons.forEach(btn => btn.style.pointerEvents = "none");
+                // חסימת כל הכפתורים באזור השאלות
+                questionsArea.querySelectorAll('button').forEach(btn => btn.style.pointerEvents = "none");
             }
             
-            const welcomeMsg = document.getElementById('gameTitle') || document.querySelector('h2');
-            welcomeMsg.textContent = "נגמר הזמן! נא בחר דמות!";
-            welcomeMsg.style.color = "orange";
-
-            timerDisplay.textContent = "הזדמנות אחרונה!";
-            timerDisplay.style.color = "red";
+            const welcomeMsg = document.getElementById('gameTitle');
+            if (welcomeMsg) {
+                welcomeMsg.textContent = "נגמר הזמן! נא בחר דמות!";
+                welcomeMsg.style.color = "orange";
+            }
         }
     }, 1000);
 }

@@ -18,7 +18,7 @@
 }
 
 body {
-    font-family: 'Heebo', sans-serif;
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     background-color: var(--bg-dark);
     background-image: linear-gradient(rgba(15, 23, 42, 0.5), rgba(15, 23, 50, 0.5)), url('../IMAGES/background.png');
     background-size: cover;    background-size: cover;
@@ -28,12 +28,31 @@ body {
     color: var(--text);
 }
 
-
-/* --- תוספת: אנימציית כניסה חלקה לדף --- */
-@keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+/* עיצוב המודל */
+.modal {
+display: none;
+ position: fixed;
+  z-index: 1000;
+  left: 0; top: 0;
+ width: 100%; height: 100%;
+ background-color: rgba(0,0,0,0.5);
+ color:var(--glass-dark);
 }
+.modal-content {
+ background-color: white;
+  margin: 10% auto;
+ padding: 25px;
+ border-radius: 15px;
+  width: 50%;
+ position: relative;
+box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+    .close-button {
+    position: absolute;
+    top: 10px; left: 15px;
+    font-size: 28px; cursor: pointer;
+}
+
 
 #loginSection, .game-layout {
     animation: fadeInUp 0.6s ease-out;
@@ -117,23 +136,6 @@ thead th {
     justify-content: center; 
     align-content: start;
 }
-
-/* --- שדרוג: תזוזה לכרטיסי הדמויות --- */
-.character-card {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 10px; /* עיגול פינות עדין יותר */
-    padding: 4px; /* מינימום ריפוד מסביב לתמונה */
-    transition: all 0.4s ease-in-out;
-    aspect-ratio: 1 / 1;
-    max-width: 85px; /* הגבלת הרוחב המקסימלי של כל כרטיס */
-    margin: 0 auto; 
-    cursor: pointer;
-    width: 100%; 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
-}
 #gameBoard {
     flex: 1;
     display: grid;
@@ -143,7 +145,45 @@ thead th {
     align-content: start; /* מצמיד את הכרטיסים למעלה */
 }
 
+/* --- שדרוג: תזוזה לכרטיסי הדמויות --- */
+/* --- כרטיס הדמויות - המידות המקוריות שלך --- */
+.character-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px; 
+    padding: 4px; 
+    transition: all 0.4s ease-in-out;
+    aspect-ratio: 1 / 1;
+    max-width: 85px; /* הגודל שאת אוהבת */
+    margin: 0 auto; 
+    cursor: pointer;
+    width: 100%; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
 
+    /* האנימציה שמוסיפה את הכניסה בלי להרוס את הסיבוב ב-JS */
+    animation: randomEntry 0.5s ease-out;
+    animation-fill-mode: backwards; 
+}
+
+/*הגדרת אנימציה לתמונות */
+.character-card:nth-child(3n) { animation-delay: 0.1s; }
+.character-card:nth-child(2n) { animation-delay: 0.4s; }
+.character-card:nth-child(5n) { animation-delay: 0.2s; }
+.character-card:nth-child(7n) { animation-delay: 0.6s; }
+.character-card:nth-child(4n) { animation-delay: 0.3s; }
+
+@keyframes randomEntry {
+    from {
+        opacity: 0;
+        transform: scale(0.9); /* נכנס מתוך עצמו (במקום מלמטה) */
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
 
 
 .character-card:hover {
@@ -255,11 +295,7 @@ thead th {
     animation: pulse 2s infinite; /* אנימציית דופק עדינה לדמות שנחשפה */
 }
 
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
-}
+
 
 /* כפתור משחק חדש */
 .icon-btn {
@@ -301,9 +337,8 @@ thead th {
 }
 /* עיצוב הכותרת הראשית מחוץ לקופסה */
 .main-game-title {
-    font-family: 'Assistant', sans-serif;
-
-    font-size: 6rem; /* גודל בולט מאוד */
+    /* מודגש וחזק */
+    font-size: 7rem; /* גודל בולט מאוד */
     font-weight: 900;
     text-align: center;
     margin-bottom: 40px; /* רווח מהקופסה שלמטה */
@@ -321,7 +356,11 @@ thead th {
     animation: fadeInDown 0.8s ease-out;
 }
 
-
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
 
 
 /* אנימציית כניסה לכותרת */
@@ -336,15 +375,7 @@ thead th {
     }
 }
 
-/* התאמה למסכים קטנים (טלפונים) */
-@media (max-width: 600px) {
-    .main-game-title {
-        font-size: 2.5rem;
-    }
-    .main-game-title .subtitle {
-        letter-spacing: 4px;
-    }
-}
+
 .options-row {
     margin-top: 20px;
     display: flex;
@@ -440,6 +471,7 @@ thead th {
 
 /* טריק כדי שהכותרת תהיה בדיוק באמצע: */
 #gameTitle {
+    
     flex-grow: 1;             /* תופס את כל המרחב הפנוי */
     text-align: center;       /* ממרכז את הטקסט בתוך המרחב הזה */
     margin: 0;                /* מאפס מרווחים שיכולים להרוס את המרכוז */
@@ -473,9 +505,7 @@ thead th {
     }
 }
 @media (max-width: 500px) {
-    .main-game-title {
-        font-size: 2.2rem; /* הקטנת הכותרת הראשית */
-    }
+
 
     #gameBoard {
         grid-template-columns: repeat(3, 1fr); /* 3 דמויות בשורה בלבד */
@@ -511,5 +541,14 @@ thead th {
     th, td {
         padding: 8px 10px; /* הקטנת המרווחים בטבלה */
         font-size: 0.85rem;
+    }
+}
+/* התאמה למסכים קטנים (טלפונים) */
+@media (max-width: 600px) {
+    .main-game-title {
+        font-size: 2.5rem;
+    }
+    .main-game-title .subtitle {
+        letter-spacing: 4px;
     }
 }

@@ -12,6 +12,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const nameInput = document.getElementById('playerName');
     const phoneInput = document.getElementById('playerPhone');
 
+    phoneInput.addEventListener('input', (e) => {
+    e.target.value = e.target.value.replace(/[^0-9]/g, '');
+    });
+
     //  ניהול הוראות 
     if (btn && modal) {
         btn.onclick = () => modal.style.display = "block";
@@ -25,6 +29,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     //  שליחת טופס 
     if (loginForm) {
+        /**
+        * מטפל באירוע שליחת הטופס: מנקה רווחים, מבצע בדיקת תקינות ועובר לדף המשחק.
+        * @param {Event} e - אובייקט האירוע של השליחה.
+        */
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
             
@@ -32,11 +40,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const finalPhone = phoneInput.value.trim();
             const difficulty = document.getElementById('difficulty').value;
 
-            // בדיקה בסיסית שהשדות לא ריקים
+            //בדיקה אם השדות ריקים - טיפול בשגיאות
             if (!finalName || !finalPhone) {
-                alert("נא למלא את כל השדות");
-                return;
-            }
+                console.warn("Missing user details"); 
+                return; // עוצר את הפונקציה ומונע את המעבר לדף הבא
+}
+
+
 
             // שמירה ב-localStorage לצורך שימוש בדפים אחרים
             localStorage.setItem('user_name', finalName);
