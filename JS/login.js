@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('user_phone', finalPhone);
             
             // מעבר לדף המשחק
-            window.location.href = `HTML/game.html?name=${encodeURIComponent(finalName)}&level=${difficulty}`;
+            window.location.href = `HTML/start.html?name=${encodeURIComponent(finalName)}&level=${difficulty}`;
         });
     }
 });

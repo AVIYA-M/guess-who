@@ -6,10 +6,24 @@ let currentPersons = [...persons];
 let timerInterval;
 let questionsAsked = 0;
 
+// הגדרת צלילים
+const backgroundMusic = new Audio("../IMAGES/musicBackground.mp3"); 
+backgroundMusic.loop = true;
+backgroundMusic.volume = 0.1;
+
+
+
 /**
  * מחכה לטעינת ה-DOM, מחלץ נתונים מה-URL ומפעיל את המשחק.
  */
 document.addEventListener('DOMContentLoaded', () => {
+
+      document.addEventListener('click', () => {
+        if (backgroundMusic.paused) {
+            backgroundMusic.play().catch(err => console.log("Music play blocked:", err));
+        }
+      }, { once: true });
+
     const backHomeBtn = document.getElementById('backHome');
     
     if (backHomeBtn) {
@@ -198,12 +212,15 @@ function checkQuestion(key, value) {
     }
     });
 }
-
+window.addEventListener('beforeunload', () => {
+    backgroundMusic.pause();
+});
 /**
  * פונקציה מעודכנת  - בודקת ניחוש ומציגה מסך סיום.
  */
 function guessPerson(clickedPerson) {
     // עצירת הטיימר ב-BOM
+    backgroundMusic.pause(); // עוצר את המוזיקה
     clearInterval(timerInterval);
     const questionsArea = document.getElementById('questionsArea');
     const gameBoard = document.getElementById('gameBoard');
@@ -244,7 +261,7 @@ function guessPerson(clickedPerson) {
     // כפתור למשחק חוזר
     const retryBtn = document.createElement('button');
     retryBtn.className = 'icon-btn';
-    retryBtn.onclick = () => window.location.href='../HTML/game.html';
+    retryBtn.onclick = () => window.location.href='../HTML/start.html';
     
     const btnImg = document.createElement('img');
     btnImg.src = "../IMAGES/again.png";
@@ -312,6 +329,7 @@ function startTimer() {
         // טיפול במקרה שנגמר הזמן
         if (timeLeft <= 0) {
             clearInterval(timerInterval);
+            backgroundMusic.pause();
             const questionsArea = document.getElementById('questionsArea');
             if (questionsArea) {
                 questionsArea.style.opacity = "0.8"; 
